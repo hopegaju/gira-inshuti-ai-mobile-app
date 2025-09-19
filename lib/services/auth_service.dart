@@ -1,3 +1,4 @@
+// services/auth_service.dart
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../models/user.dart';
@@ -126,6 +127,25 @@ class AuthService extends ChangeNotifier {
       return [];
     }
     return List.from(_users);
+  }
+
+  // Get all counselors (for users to see available counselors)
+  List<User> getAllCounselors() {
+    return _users.where((u) => u.role == UserRole.counselor && u.isActive).toList();
+  }
+
+  // Get all active users (for counselors to see their potential clients)
+  List<User> getAllActiveUsers() {
+    return _users.where((u) => u.role == UserRole.user && u.isActive).toList();
+  }
+
+  // Get user by ID
+  User? getUserById(String userId) {
+    try {
+      return _users.firstWhere((u) => u.id == userId);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<bool> createCounselor(String email, String name, String password) async {
