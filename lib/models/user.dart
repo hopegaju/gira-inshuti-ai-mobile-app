@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum UserRole { user, counselor, admin }
 
 class User {
@@ -7,6 +9,7 @@ class User {
   final UserRole role;
   final DateTime createdAt;
   final bool isActive;
+  final String? gender; // Added gender field
 
   User({
     required this.id,
@@ -15,6 +18,7 @@ class User {
     required this.role,
     required this.createdAt,
     this.isActive = true,
+    this.gender,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,7 @@ class User {
       ),
       createdAt: DateTime.parse(json['createdAt']),
       isActive: json['isActive'] ?? true,
+      gender: json['gender'],
     );
   }
 
@@ -39,6 +44,7 @@ class User {
       'role': role.toString().split('.').last,
       'createdAt': createdAt.toIso8601String(),
       'isActive': isActive,
+      'gender': gender,
     };
   }
 
@@ -51,5 +57,25 @@ class User {
       case UserRole.user:
         return 'User';
     }
+  }
+
+  User copyWith({
+    String? id,
+    String? email,
+    String? name,
+    UserRole? role,
+    DateTime? createdAt,
+    bool? isActive,
+    String? gender,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      createdAt: createdAt ?? this.createdAt,
+      isActive: isActive ?? this.isActive,
+      gender: gender ?? this.gender,
+    );
   }
 }

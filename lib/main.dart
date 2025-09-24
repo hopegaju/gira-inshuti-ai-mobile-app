@@ -7,12 +7,18 @@ import 'screens/register_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/admin_dashboard.dart';
 import 'screens/counselor_dashboard.dart';
+import 'screens/user_messaging_screen.dart';
+import 'screens/chat_screen.dart';
 import 'services/auth_service.dart';
+import 'services/messaging_service.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AuthService(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthService()),
+        ChangeNotifierProvider(create: (context) => MessagingService()..initializeDemoData()),
+      ],
       child: MyApp(),
     ),
   );
@@ -43,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => DashboardScreen(),
         '/admin': (context) => AdminDashboard(),
         '/counselor': (context) => CounselorDashboard(),
+        '/messaging': (context) => MessagingScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
