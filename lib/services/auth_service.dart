@@ -25,6 +25,7 @@ class AuthService extends ChangeNotifier {
         name: 'System Administrator',
         role: UserRole.admin,
         createdAt: DateTime.now(),
+        gender: 'Prefer not to say',
       ),
       User(
         id: '2',
@@ -32,6 +33,7 @@ class AuthService extends ChangeNotifier {
         name: 'Senior Counselor',
         role: UserRole.counselor,
         createdAt: DateTime.now(),
+        gender: 'Woman',
       ),
     ];
   }
@@ -74,11 +76,21 @@ class AuthService extends ChangeNotifier {
     } else if (email == 'counselor@girainshuti.com') {
       return password == 'counselor123';
     } else {
-      return password.length >= 6; // Basic validation for user accounts
+      // For user accounts, validate password complexity
+      return _isPasswordComplex(password);
     }
   }
 
-  Future<bool> register(String email, String password, String name) async {
+  bool _isPasswordComplex(String password) {
+    // Check password meets all requirements
+    return password.length >= 8 &&
+           password.contains(RegExp(r'[A-Z]')) && // Uppercase letter
+           password.contains(RegExp(r'[a-z]')) && // Lowercase letter
+           password.contains(RegExp(r'[0-9]')) && // Number
+           password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')); // Special character
+  }
+
+  Future<bool> register(String email, String password, String name, {String? gender}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -95,6 +107,11 @@ class AuthService extends ChangeNotifier {
         throw Exception('User already exists');
       }
 
+      // Validate password complexity
+      if (!_isPasswordComplex(password)) {
+        throw Exception('Password does not meet requirements');
+      }
+
       // Create new user (only regular users can register)
       final newUser = User(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -102,6 +119,7 @@ class AuthService extends ChangeNotifier {
         name: name,
         role: UserRole.user, // Only users can self-register
         createdAt: DateTime.now(),
+        gender: gender,
       );
 
       _users.add(newUser);
@@ -148,7 +166,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<bool> createCounselor(String email, String name, String password) async {
+  Future<bool> createCounselor(String email, String name, String password, {String? gender}) async {
     if (_currentUser?.role != UserRole.admin) {
       return false;
     }
@@ -159,6 +177,7 @@ class AuthService extends ChangeNotifier {
       name: name,
       role: UserRole.counselor,
       createdAt: DateTime.now(),
+      gender: gender,
     );
 
     _users.add(newCounselor);
@@ -174,17 +193,53 @@ class AuthService extends ChangeNotifier {
     final userIndex = _users.indexWhere((u) => u.id == userId);
     if (userIndex != -1) {
       final user = _users[userIndex];
-      _users[userIndex] = User(
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        createdAt: user.createdAt,
-        isActive: !user.isActive,
-      );
+      _users[userIndex] = user.copyWith(isActive: !user.isActive);
       notifyListeners();
       return true;
     }
     return false;
+  }
+
+  // Update user profile
+  Future<bool> updateUserProfile({
+    String? name,
+    String? email,
+    String? gender,
+  }) async {
+    if (_currentUser == null) return false;
+
+    final userIndex = _users.indexWhere((u) => u.id == _currentUser!.id);
+    if (userIndex != -1) {
+      final updatedUser = _currentUser!.copyWith(
+        name: name ?? _currentUser!.name,
+        email: email ?? _currentUser!.email,
+        gender: gender ?? _currentUser!.gender,
+      );
+      
+      _users[userIndex] = updatedUser;
+      _currentUser = updatedUser;
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  // Change password
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    if (_currentUser == null) return false;
+    
+    // Validate current password
+    if (!_validatePassword(_currentUser!.email, currentPassword)) {
+      return false;
+    }
+    
+    // Validate new password complexity
+    if (!_isPasswordComplex(newPassword)) {
+      return false;
+    }
+    
+    // In a real app, you would hash and store the new password
+    // For this demo, we'll just return true
+    return true;
   }
 }
