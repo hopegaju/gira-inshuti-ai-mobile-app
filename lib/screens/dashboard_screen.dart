@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/messaging_service.dart';
+import '../models/user.dart';
+import 'user_messaging_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   @override
@@ -127,8 +130,9 @@ class DashboardScreen extends StatelessWidget {
                       subtitle: 'Connect with counselors',
                       color: Colors.green,
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Chat feature coming soon!')),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MessagingScreen()),
                         );
                       },
                     ),
@@ -168,6 +172,66 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 30),
+                // Quick messaging overview
+                Consumer<MessagingService>(
+                  builder: (context, messagingService, child) {
+                    final unreadCount = messagingService.getUnreadCount(
+                      user?.id ?? '', 
+                      user?.role ?? UserRole.user
+                    );
+                    
+                    if (unreadCount > 0) {
+                      return Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(16),
+                        margin: EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.orange.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.message,
+                              color: Colors.orange.shade700,
+                              size: 24,
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'You have $unreadCount unread messages',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.orange.shade800,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Tap to view your conversations',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.orange.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.orange.shade600,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(20),

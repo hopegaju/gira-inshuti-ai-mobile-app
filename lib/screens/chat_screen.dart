@@ -476,8 +476,28 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  String _formatTime(DateTime time) {
+ String _formatTime(DateTime time) {
     final hour = time.hour;
     final minute = time.minute.toString().padLeft(2, '0');
     final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour > 12 ? hour - 12 : hour ==
+    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    return '$displayHour:$minute $period';
+  }
+
+  String _formatTimestamp(DateTime time) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final messageDate = DateTime(time.year, time.month, time.day);
+    
+    if (messageDate == today) {
+      return 'Today';
+    } else if (messageDate == today.subtract(Duration(days: 1))) {
+      return 'Yesterday';
+    } else if (now.difference(messageDate).inDays < 7) {
+      const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      return weekdays[time.weekday - 1];
+    } else {
+      return '${time.day}/${time.month}/${time.year}';
+    }
+  }
+}

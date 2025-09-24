@@ -1,4 +1,3 @@
-// screens/messaging_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -205,15 +204,17 @@ class MessagingScreen extends StatelessWidget {
 
     return ListTile(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              otherUser: otherUser!,
-              conversationId: conversation.id,
+        if (otherUser != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                otherUser: otherUser,
+                conversationId: conversation.id,
+              ),
             ),
-          ),
-        );
+          );
+        }
       },
       leading: Stack(
         children: [
