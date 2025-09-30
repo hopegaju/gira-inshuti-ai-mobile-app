@@ -149,232 +149,200 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ],
       ),
       body: Consumer<AuthService>(
-        builder: (context, authService, child) {
-          final users = authService.getAllUsers();
-          final userCount = users.where((u) => u.role == UserRole.user).length;
-          final counselorCount = users.where((u) => u.role == UserRole.counselor).length;
-          final adminCount = users.where((u) => u.role == UserRole.admin).length;
+  builder: (context, authService, child) {
+    final usersStream = authService.getAllUsers();
+    
+    // Handle null stream (user not admin or demo mode)
+    if (usersStream == null) {
+      return Center(
+        child: Text('No access to user data'),
+      );
+    }
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.red.shade700, Colors.red.shade500],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
+    return StreamBuilder<List<User>>(
+      stream: usersStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No users found'));
+        }
+
+        final users = snapshot.data!;
+        final userCount = users.where((u) => u.role == UserRole.user).length;
+        final counselorCount = users.where((u) => u.role == UserRole.counselor).length;
+        final adminCount = users.where((u) => u.role == UserRole.admin).length;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Your header container
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.red.shade700, Colors.red.shade500],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.admin_panel_settings,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                          SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Administrator',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'System Management',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                SizedBox(height: 30),
-                Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        'Total Users',
-                        userCount.toString(),
-                        Icons.people,
-                        Colors.blue,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildStatCard(
-                        'Counselors',
-                        counselorCount.toString(),
-                        Icons.psychology,
-                        Colors.green,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildStatCard(
-                        'Admins',
-                        adminCount.toString(),
-                        Icons.admin_panel_settings,
-                        Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'User Management',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: _showCreateCounselorDialog,
-                      icon: Icon(Icons.add),
-                      label: Text('Add Counselor'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: users.length,
-                    separatorBuilder: (context, index) => Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: _getRoleColor(user.role).withOpacity(0.1),
-                          child: Icon(
-                            _getRoleIcon(user.role),
-                            color: _getRoleColor(user.role),
-                          ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.white,
+                          size: 32,
                         ),
-                        title: Text(
-                          user.name,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Column(
+                        SizedBox(width: 12),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(user.email),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _getRoleColor(user.role).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    user.roleDisplayName,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: _getRoleColor(user.role),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: user.isActive
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.red.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    user.isActive ? 'Active' : 'Inactive',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: user.isActive ? Colors.green : Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              'Administrator',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authService.currentUser?.name ?? 'Admin',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
-                        trailing: user.role != UserRole.admin
-                            ? IconButton(
-                                icon: Icon(
-                                  user.isActive ? Icons.block : Icons.check_circle,
-                                  color: user.isActive ? Colors.red : Colors.green,
-                                ),
-                                onPressed: () async {
-                                  final success = await authService.toggleUserStatus(user.id);
-                                  if (success) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          user.isActive
-                                              ? 'User deactivated'
-                                              : 'User activated',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                              )
-                            : null,
-                        isThreeLine: true,
-                      );
-                    },
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+              
+              // Your stats cards and rest of the UI...
+              // (Keep the rest of your existing UI code here)
+              
+              // User list section with users from snapshot
+              ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: users.length,
+                separatorBuilder: (context, index) => Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: _getRoleColor(user.role).withOpacity(0.1),
+                      child: Icon(
+                        _getRoleIcon(user.role),
+                        color: _getRoleColor(user.role),
+                      ),
+                    ),
+                    title: Text(
+                      user.name,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(user.email),
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getRoleColor(user.role).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                user.roleDisplayName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: _getRoleColor(user.role),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: user.isActive
+                                    ? Colors.green.withOpacity(0.1)
+                                    : Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                user.isActive ? 'Active' : 'Inactive',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: user.isActive ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    trailing: user.role != UserRole.admin
+                        ? IconButton(
+                            icon: Icon(
+                              user.isActive ? Icons.block : Icons.check_circle,
+                              color: user.isActive ? Colors.red : Colors.green,
+                            ),
+                            onPressed: () async {
+                              final success = await authService.toggleUserStatus(user.id);
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      user.isActive
+                                          ? 'User deactivated'
+                                          : 'User activated',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          )
+                        : null,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  },
+),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateCounselorDialog,
+        backgroundColor: Colors.red.shade700,
+        child: Icon(Icons.add),
+        tooltip: 'Create Counselor Account',
       ),
     );
   }

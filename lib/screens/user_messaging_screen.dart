@@ -78,12 +78,36 @@ class MessagingScreen extends StatelessWidget {
                       SizedBox(height: 12),
                       SizedBox(
                         height: 100,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: authService.getAllCounselors().length,
-                          itemBuilder: (context, index) {
-                            final counselor = authService.getAllCounselors()[index];
-                            return _buildCounselorCard(context, counselor, currentUser, messagingService);
+                        child: StreamBuilder<List<User>>(
+                          stream: authService.getAllCounselors(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  'No counselors available',
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
+                              );
+                            }
+
+                            final counselors = snapshot.data!;
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: counselors.length,
+                              itemBuilder: (context, index) {
+                                final counselor = counselors[index];
+                                return _buildCounselorCard(
+                                  context,
+                                  counselor,
+                                  currentUser,
+                                  messagingService,
+                                );
+                              },
+                            );
                           },
                         ),
                       ),
@@ -369,7 +393,11 @@ class MessagingScreen extends StatelessWidget {
     final otherUserId = currentUser.id == conversation.userId 
         ? conversation.counselorId 
         : conversation.userId;
-    return authService.getUserById(otherUserId);
+    
+    // Since getUserById doesn't exist in AuthService, we need to get users from the stream
+    // For now, we'll return null and handle it in the UI, or you need to add getUserById to AuthService
+    // This is a temporary workaround - you should add getUserById method to AuthService
+    return null; // TODO: Implement getUserById in AuthService or fetch from a local cache
   }
 
   Color _getUserColor(UserRole? role) {

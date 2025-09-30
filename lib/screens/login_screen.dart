@@ -64,47 +64,47 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final success = await authService.login(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+  if (_formKey.currentState!.validate()) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final result = await authService.signIn(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
 
-      if (success) {
-        final user = authService.currentUser!;
-        String route;
-        switch (user.role) {
-          case UserRole.admin:
-            route = '/admin';
-            break;
-          case UserRole.counselor:
-            route = '/counselor';
-            break;
-          case UserRole.user:
-            route = '/dashboard';
-            break;
-        }
-        Navigator.pushReplacementNamed(context, route);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Invalid email or password'),
-              ],
-            ),
-            backgroundColor: Colors.red.shade600,
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        );
+    if (result.success) {
+      final user = authService.currentUser!;
+      String route;
+      switch (user.role) {
+        case UserRole.admin:
+          route = '/admin_dashboard';
+          break;
+        case UserRole.counselor:
+          route = '/counselor_dashboard';
+          break;
+        case UserRole.user:
+          route = '/user_dashboard';
+          break;
       }
+      Navigator.pushReplacementNamed(context, route);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(child: Text(result.message ?? 'Login failed')),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
