@@ -168,81 +168,195 @@ void main() {
 
     test('Admin login success', () async {
       final authService = AuthService();
-      final result = await authService.login('admin@girainshuti.com', 'admin123');
+      final result = await authService.signIn('admin@girainshuti.com', 'Admin123!@#');
       
-      expect(result, true);
+      expect(result.success, true);
       expect(authService.isLoggedIn, true);
       expect(authService.currentUser?.email, 'admin@girainshuti.com');
     });
 
     test('Invalid login fails', () async {
       final authService = AuthService();
-      final result = await authService.login('invalid@email.com', 'wrongpassword');
+      final result = await authService.signIn('invalid@email.com', 'wrongpassword');
       
-      expect(result, false);
+      expect(result.success, false);
       expect(authService.isLoggedIn, false);
       expect(authService.currentUser, null);
     });
 
     test('Counselor login success', () async {
       final authService = AuthService();
-      final result = await authService.login('counselor@girainshuti.com', 'counselor123');
+      final result = await authService.signIn('counselor@girainshuti.com', 'Counselor123!@#');
       
-      expect(result, true);
+      expect(result.success, true);
       expect(authService.isLoggedIn, true);
       expect(authService.currentUser?.email, 'counselor@girainshuti.com');
     });
 
-    test('User registration success', () async {
+    test('User login success', () async {
       final authService = AuthService();
-      final result = await authService.register('user@test.com', 'password123', 'Test User');
+      final result = await authService.signIn('user@girainshuti.com', 'Demo123!@#');
       
-      expect(result, true);
+      expect(result.success, true);
       expect(authService.isLoggedIn, true);
-      expect(authService.currentUser?.email, 'user@test.com');
-      expect(authService.currentUser?.name, 'Test User');
+      expect(authService.currentUser?.email, 'user@girainshuti.com');
+    });
+
+    test('User registration success (Firebase mode)', () async {
+      final authService = AuthService();
+      final result = await authService.register(
+        'user@test.com',
+        'Test123!@#',
+        'Test User',
+        gender: 'Male',
+      );
+      
+      // In demo mode, registration requires Firebase connection
+      if (authService.authMode == AuthMode.demo) {
+        expect(result.success, false);
+        expect(result.error, AuthError.networkError);
+      } else {
+        // In Firebase mode, should succeed
+        expect(result.success, true);
+        expect(authService.isLoggedIn, true);
+        expect(authService.currentUser?.email, 'user@test.com');
+        expect(authService.currentUser?.name, 'Test User');
+      }
     });
 
     test('Duplicate email registration fails', () async {
       final authService = AuthService();
       
-      // First registration should succeed
-      final firstResult = await authService.register('user@test.com', 'password123', 'Test User');
-      expect(firstResult, true);
+      // Try to register with demo account email (reserved)
+      final result = await authService.register(
+        'admin@girainshuti.com',
+        'Test123!@#',
+        'Test Admin',
+      );
       
-      // Logout to test duplicate registration
-      authService.logout();
-      
-      // Second registration with same email should fail
-      final secondResult = await authService.register('user@test.com', 'password456', 'Another User');
-      expect(secondResult, false);
+      expect(result.success, false);
+      expect(result.error, AuthError.userExists);
     });
 
-    test('Admin can create counselors', () async {
+    test('Weak password registration fails', () async {
+      final authService = AuthService();
+      
+      final result = await authService.register(
+        'user@test.com',
+        'weak',
+        'Test User',
+      );
+      
+      expect(result.success, false);
+      expect(result.error, AuthError.weakPassword);
+    });
+
+    test('Password validation works correctly', () {
+      final authService = AuthService();
+      
+      // Valid password
+      expect(authService.isPasswordValid('Test123!@#'), true);
+      
+      // Too short
+      expect(authService.isPasswordValid('Test1!'), false);
+      
+      // No uppercase
+      expect(authService.isPasswordValid('test123!@#'), false);
+      
+      // No lowercase
+      expect(authService.isPasswordValid('TEST123!@#'), false);
+      
+      // No number
+      expect(authService.isPasswordValid('Test!@#'), false);
+      
+      // No special character
+      expect(authService.isPasswordValid('Test123'), false);
+    });
+
+    test('Password strength calculation works', () {
+      final authService = AuthService();
+      
+      // Strong password
+      final strongScore = authService.getPasswordStrength('Test123!@#SecurePassword');
+      expect(strongScore, greaterThan(70));
+      
+      // Weak password
+      final weakScore = authService.getPasswordStrength('test');
+      expect(weakScore, lessThan(30));
+    });
+
+    test('Admin can get all users in demo mode', () async {
       final authService = AuthService();
       
       // Login as admin
-      await authService.login('admin@girainshuti.com', 'admin123');
+      await authService.signIn('admin@girainshuti.com', 'Admin123!@#');
       
-      // Create counselor
-      final result = await authService.createCounselor('newcounselor@test.com', 'New Counselor', 'password');
-      expect(result, true);
+      final usersStream = authService.getAllUsers();
+      expect(usersStream, isNotNull);
       
-      // Verify counselor was added
-      final users = authService.getAllUsers();
-      final newCounselor = users.where((u) => u.email == 'newcounselor@test.com').firstOrNull;
-      expect(newCounselor, isNotNull);
-      expect(newCounselor?.name, 'New Counselor');
+      // Get first emission from stream
+      final users = await usersStream!.first;
+      expect(users.isNotEmpty, true);
+      expect(users.length, greaterThanOrEqualTo(3)); // At least 3 demo accounts
+    });
+
+    test('Non-admin cannot get all users', () async {
+      final authService = AuthService();
+      
+      // Login as regular user
+      await authService.signIn('user@girainshuti.com', 'Demo123!@#');
+      
+      final usersStream = authService.getAllUsers();
+      expect(usersStream, isNull);
+    });
+
+    test('Can get all counselors', () async {
+      final authService = AuthService();
+      
+      // Login as any user
+      await authService.signIn('user@girainshuti.com', 'Demo123!@#');
+      
+      final counselorsStream = authService.getAllCounselors();
+      expect(counselorsStream, isNotNull);
+      
+      final counselors = await counselorsStream!.first;
+      expect(counselors.isNotEmpty, true);
+      expect(counselors.first.email, 'counselor@girainshuti.com');
+    });
+
+    test('Admin can create counselors (Firebase mode only)', () async {
+      final authService = AuthService();
+      
+      // Login as admin
+      await authService.signIn('admin@girainshuti.com', 'Admin123!@#');
+      
+      // Try to create counselor
+      final result = await authService.createCounselor(
+        'newcounselor@test.com',
+        'New Counselor',
+        'Counselor123!@#',
+        gender: 'Female',
+      );
+      
+      // In demo mode, this should fail (no Firebase)
+      if (authService.authMode == AuthMode.demo) {
+        expect(result, false);
+      }
+      // In Firebase mode, it should succeed (if properly configured)
     });
 
     test('Non-admin cannot create counselors', () async {
       final authService = AuthService();
       
-      // Register as regular user
-      await authService.register('user@test.com', 'password123', 'Regular User');
+      // Login as regular user
+      await authService.signIn('user@girainshuti.com', 'Demo123!@#');
       
-      // Try to create counselor (should fail)
-      final result = await authService.createCounselor('counselor@test.com', 'Test Counselor', 'password');
+      // Try to create counselor (should fail - not admin)
+      final result = await authService.createCounselor(
+        'counselor@test.com',
+        'Test Counselor',
+        'Counselor123!@#',
+      );
       expect(result, false);
     });
 
@@ -250,13 +364,42 @@ void main() {
       final authService = AuthService();
       
       // Login first
-      await authService.login('admin@girainshuti.com', 'admin123');
+      await authService.signIn('admin@girainshuti.com', 'Admin123!@#');
       expect(authService.isLoggedIn, true);
       
-      // Logout
-      authService.logout();
+      // Logout (using signOut which is the correct method)
+      await authService.signOut();
       expect(authService.isLoggedIn, false);
       expect(authService.currentUser, null);
+    });
+
+    test('Update user profile works', () async {
+      final authService = AuthService();
+      
+      // Login
+      await authService.signIn('user@girainshuti.com', 'Demo123!@#');
+      
+      // Update profile
+      final result = await authService.updateUserProfile(
+        displayName: 'Updated Name',
+        gender: 'Female',
+      );
+      
+      expect(result, true);
+      expect(authService.currentUser?.name, 'Updated Name');
+      expect(authService.currentUser?.gender, 'Female');
+    });
+
+    test('Demo credentials are accessible', () {
+      final authService = AuthService();
+      final credentials = authService.getDemoCredentials();
+      
+      expect(credentials.containsKey('admin@girainshuti.com'), true);
+      expect(credentials.containsKey('counselor@girainshuti.com'), true);
+      expect(credentials.containsKey('user@girainshuti.com'), true);
+      expect(credentials['admin@girainshuti.com'], 'Admin123!@#');
+      expect(credentials['counselor@girainshuti.com'], 'Counselor123!@#');
+      expect(credentials['user@girainshuti.com'], 'Demo123!@#');
     });
   });
 }

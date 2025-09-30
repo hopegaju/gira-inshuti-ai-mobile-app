@@ -9,9 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.1
+  provider: ^6.1.2       
   cupertino_icons: ^1.0.6
-
+  google_sign_in: ^6.2.1 
+  firebase_auth: ^4.17.4 
+  firebase_core: ^2.27.1
+  cloud_firestore: ^4.16.0 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
