@@ -71,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
     );
 
     if (result.success) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, '//user_dashboard');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
