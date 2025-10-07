@@ -14,6 +14,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Debug logging
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      debugPrint('=== ADMIN DASHBOARD DEBUG ===');
+      debugPrint('Current user: ${authService.currentUser?.email}');
+      debugPrint('User role: ${authService.currentUser?.role}');
+      debugPrint('Auth mode: ${authService.authMode}');
+      debugPrint('Is using Firebase: ${authService.isUsingFirebase}');
+      
+      final usersStream = authService.getAllUsers();
+      debugPrint('Users stream is null: ${usersStream == null}');
+    });
+  }
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -150,28 +166,66 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       body: Consumer<AuthService>(
   builder: (context, authService, child) {
+    debugPrint('Consumer building...');
+    debugPrint('Current user in consumer: ${authService.currentUser?.email}');
+    debugPrint('User role in consumer: ${authService.currentUser?.role}');
+    
     final usersStream = authService.getAllUsers();
+    debugPrint('Users stream in consumer: ${usersStream != null ? "not null" : "NULL"}');
     
     // Handle null stream (user not admin or demo mode)
     if (usersStream == null) {
+      debugPrint('ERROR: Users stream is null!');
       return Center(
-        child: Text('No access to user data'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              'No access to user data',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text('Current user: ${authService.currentUser?.email ?? "none"}'),
+            Text('Role: ${authService.currentUser?.role ?? "none"}'),
+            Text('Auth mode: ${authService.authMode}'),
+          ],
+        ),
       );
     }
 
     return StreamBuilder<List<User>>(
       stream: usersStream,
       builder: (context, snapshot) {
+        debugPrint('StreamBuilder state: ${snapshot.connectionState}');
+        debugPrint('Has error: ${snapshot.hasError}');
+        debugPrint('Error: ${snapshot.error}');
+        debugPrint('Has data: ${snapshot.hasData}');
+        debugPrint('Data length: ${snapshot.data?.length}');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No users found'));
+          debugPrint('STREAM ERROR: ${snapshot.error}');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red),
+                SizedBox(height: 16),
+                Text('Error: ${snapshot.error}'),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {}); // Force rebuild
+                  },
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
+          );
         }
 
         final users = snapshot.data!;
