@@ -611,16 +611,30 @@ class AuthService  extends ChangeNotifier {
 
   // Get all users (admin only)
   Stream<List<User>>? getAllUsers() {
-    if (_currentUser?.role != UserRole.admin) return null;
+    // Debug logging
+    debugPrint('=== getAllUsers called ===');
+    debugPrint('Current user: ${_currentUser?.email}');
+    debugPrint('Current user role: ${_currentUser?.role}');
+    debugPrint('Firebase Auth UID: ${_firebaseAuth.currentUser?.uid}');
+    debugPrint('Auth mode: $_authMode');
+    
+    // Keep the role check - it's important for security!
+    if (_currentUser?.role != UserRole.admin) {
+      debugPrint('User is not admin, returning null');
+      return null;
+    }
     
     if (_authMode != AuthMode.firebase) {
-      // Return demo users as a stream
+      debugPrint('Using demo mode');
       return Stream.value(
         _demoAccounts.values.map((account) => account['user'] as User).toList()
       );
     }
 
+    debugPrint('Creating Firestore stream for users collection');
+    
     return _firestore.collection('users').snapshots().map((snapshot) {
+      debugPrint('✅ Received snapshot with ${snapshot.docs.length} users');
       return snapshot.docs.map((doc) {
         final data = doc.data();
         return User(
@@ -633,6 +647,8 @@ class AuthService  extends ChangeNotifier {
           gender: data['gender'],
         );
       }).toList();
+    }).handleError((error) {
+      debugPrint('❌ FIRESTORE ERROR: $error');
     });
   }
 
