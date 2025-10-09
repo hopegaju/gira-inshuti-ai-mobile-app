@@ -6,12 +6,14 @@ import '../models/user.dart';
 import 'user_messaging_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: const Text('Dashboard'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -30,13 +32,13 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: 'logout',
                     child: ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('Logout'),
                       contentPadding: EdgeInsets.zero,
                     ),
-                    value: 'logout',
                   ),
                 ],
                 onSelected: (value) {
@@ -54,13 +56,13 @@ class DashboardScreen extends StatelessWidget {
         builder: (context, authService, child) {
           final user = authService.currentUser;
           return SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade700, Colors.blue.shade500],
@@ -72,32 +74,32 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Welcome back,',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         user?.name ?? 'User',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           user?.roleDisplayName ?? 'User',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -107,7 +109,7 @@ class DashboardScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Text(
                   'Quick Actions',
                   style: TextStyle(
@@ -116,10 +118,10 @@ class DashboardScreen extends StatelessWidget {
                     color: Colors.grey.shade800,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 GridView.count(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
@@ -143,7 +145,7 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.orange,
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Booking feature coming soon!')),
+                          const SnackBar(content: Text('Booking feature coming soon!')),
                         );
                       },
                     ),
@@ -154,7 +156,7 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.purple,
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Resources coming soon!')),
+                          const SnackBar(content: Text('Resources coming soon!')),
                         );
                       },
                     ),
@@ -165,13 +167,13 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.teal,
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Community feature coming soon!')),
+                          const SnackBar(content: Text('Community feature coming soon!')),
                         );
                       },
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 // Quick messaging overview
                 Consumer<MessagingService>(
                   builder: (context, messagingService, child) {
@@ -183,8 +185,8 @@ class DashboardScreen extends StatelessWidget {
                     if (unreadCount > 0) {
                       return Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        margin: EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(bottom: 20),
                         decoration: BoxDecoration(
                           color: Colors.orange.shade50,
                           borderRadius: BorderRadius.circular(12),
@@ -197,7 +199,7 @@ class DashboardScreen extends StatelessWidget {
                               color: Colors.orange.shade700,
                               size: 24,
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,12 +231,12 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       );
                     }
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   },
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -243,7 +245,7 @@ class DashboardScreen extends StatelessWidget {
                         color: Colors.grey.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 10,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -256,7 +258,7 @@ class DashboardScreen extends StatelessWidget {
                             Icons.info_outline,
                             color: Colors.blue.shade700,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Account Information',
                             style: TextStyle(
@@ -267,7 +269,7 @@ class DashboardScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildInfoRow('Email', user?.email ?? ''),
                       _buildInfoRow('Role', user?.roleDisplayName ?? ''),
                       _buildInfoRow('Member Since', 
@@ -293,7 +295,7 @@ class DashboardScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -302,7 +304,7 @@ class DashboardScreen extends StatelessWidget {
               color: Colors.grey.withOpacity(0.1),
               spreadRadius: 1,
               blurRadius: 10,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -322,7 +324,7 @@ class DashboardScreen extends StatelessWidget {
                 size: 24,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
@@ -332,7 +334,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               subtitle,
               style: TextStyle(
@@ -349,7 +351,7 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
