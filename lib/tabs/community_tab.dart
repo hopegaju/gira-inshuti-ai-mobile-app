@@ -6,6 +6,8 @@ import '../models/user.dart';
 import '../models/community_post.dart';
 
 class CommunityTab extends StatefulWidget {
+  const CommunityTab({super.key});
+
   @override
   _CommunityTabState createState() => _CommunityTabState();
 }
@@ -46,7 +48,7 @@ class _CommunityTabState extends State<CommunityTab> {
         _postController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),
@@ -61,7 +63,7 @@ class _CommunityTabState extends State<CommunityTab> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 8),
@@ -82,7 +84,7 @@ class _CommunityTabState extends State<CommunityTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Community'),
+        title: const Text('Community'),
         backgroundColor: Colors.purple.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -98,7 +100,7 @@ class _CommunityTabState extends State<CommunityTab> {
               // Filter and post section
               Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -115,7 +117,7 @@ class _CommunityTabState extends State<CommunityTab> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     
                     // Post creation area
                     Container(
@@ -132,13 +134,13 @@ class _CommunityTabState extends State<CommunityTab> {
                               hintText: 'Share your thoughts anonymously...',
                               hintStyle: TextStyle(color: Colors.grey.shade600),
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.all(16),
+                              contentPadding: const EdgeInsets.all(16),
                             ),
                             maxLines: 3,
                             maxLength: 500,
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             child: Row(
                               children: [
                                 Icon(
@@ -146,7 +148,7 @@ class _CommunityTabState extends State<CommunityTab> {
                                   size: 16,
                                   color: Colors.green.shade600,
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Your identity is completely anonymous',
@@ -161,13 +163,13 @@ class _CommunityTabState extends State<CommunityTab> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.purple.shade600,
                                     foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   child: _isPosting
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           width: 16,
                                           height: 16,
                                           child: CircularProgressIndicator(
@@ -175,7 +177,7 @@ class _CommunityTabState extends State<CommunityTab> {
                                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                           ),
                                         )
-                                      : Text('Share'),
+                                      : const Text('Share'),
                                 ),
                               ],
                             ),
@@ -192,7 +194,7 @@ class _CommunityTabState extends State<CommunityTab> {
                 child: posts.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         itemCount: posts.length,
                         itemBuilder: (context, index) {
                           final post = posts[index];
@@ -210,7 +212,7 @@ class _CommunityTabState extends State<CommunityTab> {
   Widget _buildFilterChip(String label) {
     final isSelected = _selectedFilter == label;
     return Padding(
-      padding: EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
         label: Text(
           label,
@@ -241,11 +243,11 @@ class _CommunityTabState extends State<CommunityTab> {
     final canSeePost = communityService.canUserViewPost(post, currentUser?.id ?? '');
     
     if (!canSeePost) {
-      return SizedBox.shrink(); // Hide posts that are too intense for the user
+      return const SizedBox.shrink(); // Hide posts that are too intense for the user
     }
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -254,7 +256,7 @@ class _CommunityTabState extends State<CommunityTab> {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -263,7 +265,7 @@ class _CommunityTabState extends State<CommunityTab> {
         children: [
           // Post header
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 CircleAvatar(
@@ -274,7 +276,7 @@ class _CommunityTabState extends State<CommunityTab> {
                     size: 20,
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -294,10 +296,10 @@ class _CommunityTabState extends State<CommunityTab> {
                     ),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
                 if (post.category != PostCategory.general)
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: _getCategoryColor(post.category).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -317,7 +319,7 @@ class _CommunityTabState extends State<CommunityTab> {
 
           // Post content
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               post.content,
               style: TextStyle(
@@ -330,7 +332,7 @@ class _CommunityTabState extends State<CommunityTab> {
 
           // Post actions
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 // Support reaction
@@ -343,7 +345,7 @@ class _CommunityTabState extends State<CommunityTab> {
                     );
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: post.reactions.containsKey(currentUser?.id ?? '') &&
                               post.reactions[currentUser?.id ?? ''] == ReactionType.support
@@ -360,7 +362,7 @@ class _CommunityTabState extends State<CommunityTab> {
                           size: 16,
                           color: Colors.green.shade600,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'Support ${post.supportCount}',
                           style: TextStyle(
@@ -372,13 +374,13 @@ class _CommunityTabState extends State<CommunityTab> {
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
 
                 // Reply button
                 GestureDetector(
                   onTap: () => _showReplyDialog(post, communityService),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.blue.shade200),
@@ -391,7 +393,7 @@ class _CommunityTabState extends State<CommunityTab> {
                           size: 16,
                           color: Colors.blue.shade600,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'Reply ${post.replies.length}',
                           style: TextStyle(
@@ -411,7 +413,7 @@ class _CommunityTabState extends State<CommunityTab> {
           if (post.replies.isNotEmpty) ...[
             Divider(height: 1, color: Colors.grey.shade200),
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -422,7 +424,7 @@ class _CommunityTabState extends State<CommunityTab> {
                       color: Colors.grey.shade700,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   ...post.replies.take(2).map((reply) => _buildReplyItem(reply)),
                   if (post.replies.length > 2)
                     TextButton(
@@ -440,8 +442,8 @@ class _CommunityTabState extends State<CommunityTab> {
 
   Widget _buildReplyItem(CommunityReply reply) {
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
@@ -460,7 +462,7 @@ class _CommunityTabState extends State<CommunityTab> {
                   color: Colors.grey.shade600,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Anonymous • ${_formatTime(reply.timestamp)}',
                 style: TextStyle(
@@ -470,7 +472,7 @@ class _CommunityTabState extends State<CommunityTab> {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             reply.content,
             style: TextStyle(
@@ -486,7 +488,7 @@ class _CommunityTabState extends State<CommunityTab> {
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -495,7 +497,7 @@ class _CommunityTabState extends State<CommunityTab> {
               size: 64,
               color: Colors.grey.shade400,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'No community posts yet',
               style: TextStyle(
@@ -504,7 +506,7 @@ class _CommunityTabState extends State<CommunityTab> {
                 color: Colors.grey.shade600,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Be the first to share your thoughts anonymously',
               style: TextStyle(
@@ -527,19 +529,19 @@ class _CommunityTabState extends State<CommunityTab> {
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Reply Anonymously',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: replyController,
                 decoration: InputDecoration(
@@ -551,15 +553,15 @@ class _CommunityTabState extends State<CommunityTab> {
                 maxLines: 4,
                 maxLength: 300,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () async {
                       final content = replyController.text.trim();
@@ -579,7 +581,7 @@ class _CommunityTabState extends State<CommunityTab> {
                       backgroundColor: Colors.purple.shade600,
                       foregroundColor: Colors.white,
                     ),
-                    child: Text('Reply'),
+                    child: const Text('Reply'),
                   ),
                 ],
               ),
@@ -597,18 +599,18 @@ class _CommunityTabState extends State<CommunityTab> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           height: MediaQuery.of(context).size.height * 0.7,
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'All Replies',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
                   itemCount: post.replies.length,
@@ -617,12 +619,12 @@ class _CommunityTabState extends State<CommunityTab> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Close'),
+                  child: const Text('Close'),
                 ),
               ),
             ],
