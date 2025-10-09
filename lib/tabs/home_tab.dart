@@ -6,12 +6,14 @@ import '../services/messaging_service.dart';
 import '../models/user.dart';
 
 class HomeTab extends StatelessWidget {
+  const HomeTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Welcome'),
+        title: const Text('Welcome'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -31,13 +33,13 @@ class HomeTab extends StatelessWidget {
                   ),
                 ),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: 'logout',
                     child: ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('Logout'),
                       contentPadding: EdgeInsets.zero,
                     ),
-                    value: 'logout',
                   ),
                 ],
                 onSelected: (value) {
@@ -60,14 +62,14 @@ class HomeTab extends StatelessWidget {
           );
 
           return SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Welcome header with mood check
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade700, Colors.blue.shade500],
@@ -81,29 +83,29 @@ class HomeTab extends StatelessWidget {
                     children: [
                       Text(
                         _getGreeting(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         user?.name ?? 'User',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Text(
+                      const SizedBox(height: 16),
+                      const Text(
                         'How are you feeling today?',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -120,15 +122,15 @@ class HomeTab extends StatelessWidget {
 
                 // Unread messages alert
                 if (unreadCount > 0) ...[
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       // Navigate to messages tab
-                      DefaultTabController.of(context)?.animateTo(1);
+                      DefaultTabController.of(context).animateTo(1);
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(12),
@@ -141,7 +143,7 @@ class HomeTab extends StatelessWidget {
                             color: Colors.orange.shade700,
                             size: 24,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,12 +177,12 @@ class HomeTab extends StatelessWidget {
                   ),
                 ],
 
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
 
                 // Daily tip
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(16),
@@ -195,7 +197,7 @@ class HomeTab extends StatelessWidget {
                             Icons.lightbulb_outline,
                             color: Colors.green.shade700,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Daily Wellness Tip',
                             style: TextStyle(
@@ -206,7 +208,7 @@ class HomeTab extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Text(
                         _getDailyTip(),
                         style: TextStyle(
@@ -219,7 +221,7 @@ class HomeTab extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 // Quick Actions
                 Text(
@@ -230,11 +232,11 @@ class HomeTab extends StatelessWidget {
                     color: Colors.grey.shade800,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 
                 GridView.count(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
@@ -245,7 +247,7 @@ class HomeTab extends StatelessWidget {
                       title: 'Talk to Counselor',
                       color: Colors.blue,
                       onTap: () {
-                        DefaultTabController.of(context)?.animateTo(1);
+                        DefaultTabController.of(context).animateTo(1);
                       },
                     ),
                     _buildQuickActionCard(
@@ -253,7 +255,7 @@ class HomeTab extends StatelessWidget {
                       title: 'Community',
                       color: Colors.purple,
                       onTap: () {
-                        DefaultTabController.of(context)?.animateTo(2);
+                        DefaultTabController.of(context).animateTo(2);
                       },
                     ),
                     _buildQuickActionCard(
@@ -271,12 +273,12 @@ class HomeTab extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
 
                 // Your Journey Section
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -285,7 +287,7 @@ class HomeTab extends StatelessWidget {
                         color: Colors.grey.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 10,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -300,7 +302,7 @@ class HomeTab extends StatelessWidget {
                           color: Colors.grey.shade800,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildInfoRow('Member Since', 
                         user?.createdAt.toString().split(' ')[0] ?? ''),
                       _buildInfoRow('Total Days', 
@@ -326,20 +328,20 @@ class HomeTab extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               emoji,
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white70,
               fontSize: 10,
             ),
@@ -358,7 +360,7 @@ class HomeTab extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -367,7 +369,7 @@ class HomeTab extends StatelessWidget {
               color: Colors.grey.withOpacity(0.1),
               spreadRadius: 1,
               blurRadius: 10,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -387,7 +389,7 @@ class HomeTab extends StatelessWidget {
                 size: 24,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
@@ -405,7 +407,7 @@ class HomeTab extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -470,8 +472,8 @@ class HomeTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Breathing Exercise'),
-        content: Column(
+        title: const Text('Breathing Exercise'),
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
@@ -500,14 +502,14 @@ class HomeTab extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            child: const Text('Close'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               // Could navigate to a full breathing exercise screen
             },
-            child: Text('Start Exercise'),
+            child: const Text('Start Exercise'),
           ),
         ],
       ),
@@ -519,7 +521,7 @@ class HomeTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.emergency, color: Colors.red),
             SizedBox(width: 8),
@@ -530,15 +532,15 @@ class HomeTab extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'If you\'re in immediate danger, please contact:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildCrisisContact('Emergency', '911'),
             _buildCrisisContact('Suicide Hotline', '988'),
             _buildCrisisContact('Crisis Text Line', 'Text HOME to 741741'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'You are not alone. Help is available.',
               style: TextStyle(
@@ -551,7 +553,7 @@ class HomeTab extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -560,13 +562,13 @@ class HomeTab extends StatelessWidget {
 
   Widget _buildCrisisContact(String label, String number) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(Icons.phone, size: 16, color: Colors.red),
-          SizedBox(width: 8),
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
-          Text(number, style: TextStyle(color: Colors.blue)),
+          const Icon(Icons.phone, size: 16, color: Colors.red),
+          const SizedBox(width: 8),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500)),
+          Text(number, style: const TextStyle(color: Colors.blue)),
         ],
       ),
     );
