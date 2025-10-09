@@ -4,7 +4,7 @@ import '../models/community_post.dart';
 
 class CommunityService extends ChangeNotifier {
   List<CommunityPost> _posts = [];
-  Map<String, UserContentPreferences> _userPreferences = {};
+  final Map<String, UserContentPreferences> _userPreferences = {};
 
   List<CommunityPost> get allPosts => List.from(_posts);
 
@@ -316,7 +316,7 @@ class CommunityService extends ChangeNotifier {
         userId: 'user_demo_1',
         content: 'I\'ve been feeling really anxious about starting college next month. Any advice on how to manage the transition?',
         category: PostCategory.advice,
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         severityLevel: ContentSeverityLevel.moderate,
         triggerWarnings: [],
         reactions: {
@@ -328,7 +328,7 @@ class CommunityService extends ChangeNotifier {
             id: 'reply_1',
             userId: 'user_demo_2',
             content: 'I felt the same way! What helped me was visiting the campus beforehand and joining online groups for incoming students.',
-            timestamp: DateTime.now().subtract(Duration(hours: 1)),
+            timestamp: DateTime.now().subtract(const Duration(hours: 1)),
             severityLevel: ContentSeverityLevel.mild,
           ),
         ],
@@ -338,7 +338,7 @@ class CommunityService extends ChangeNotifier {
         userId: 'user_demo_2',
         content: 'Just wanted to share that after months of therapy, I finally feel like I\'m making progress. Don\'t give up hope!',
         category: PostCategory.motivation,
-        timestamp: DateTime.now().subtract(Duration(hours: 6)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
         severityLevel: ContentSeverityLevel.mild,
         reactions: {
           'user_1': ReactionType.inspiring,
@@ -351,7 +351,7 @@ class CommunityService extends ChangeNotifier {
         userId: 'user_demo_3',
         content: 'Having a really tough day with depression. Everything feels overwhelming and I don\'t know how to cope.',
         category: PostCategory.support,
-        timestamp: DateTime.now().subtract(Duration(minutes: 30)),
+        timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
         severityLevel: ContentSeverityLevel.severe,
         triggerWarnings: ['depression'],
         reactions: {
@@ -362,7 +362,7 @@ class CommunityService extends ChangeNotifier {
             id: 'reply_2',
             userId: 'user_demo_4',
             content: 'You\'re not alone. Have you tried reaching out to a counselor or trusted friend today?',
-            timestamp: DateTime.now().subtract(Duration(minutes: 15)),
+            timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
             severityLevel: ContentSeverityLevel.mild,
           ),
         ],
