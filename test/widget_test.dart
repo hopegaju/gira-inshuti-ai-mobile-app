@@ -28,7 +28,7 @@ void main() {
     expect(find.byIcon(Icons.people), findsOneWidget);
     
     // Wait for all timers to complete to avoid test errors
-    await tester.pumpAndSettle(Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
   });
 
   testWidgets('Navigation to login screen works', (WidgetTester tester) async {
@@ -36,7 +36,7 @@ void main() {
     await tester.pumpWidget(MyApp());
 
     // Wait for splash screen animation and navigation
-    await tester.pumpAndSettle(Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
 
     // Verify we're now on the login screen
     expect(find.text('Welcome Back'), findsOneWidget);
@@ -136,7 +136,7 @@ void main() {
     await tester.pumpWidget(MyApp());
     
     // Wait for splash to complete
-    await tester.pumpAndSettle(Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
     
     // Should be on login screen
     expect(find.text('Welcome Back'), findsOneWidget);
