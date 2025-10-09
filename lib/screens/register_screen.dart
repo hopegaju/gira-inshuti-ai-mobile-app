@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -33,14 +35,14 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.3),
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic));
     
@@ -71,10 +73,10 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
     );
 
     if (result.success) {
-      Navigator.pushReplacementNamed(context, '//user_dashboard');
+      Navigator.pushReplacementNamed(context, '/user_dashboard');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 8),
@@ -83,9 +85,9 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
           ),
           backgroundColor: Colors.green.shade600,
           behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(16),
+          margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
         ),
       );
     } else {
@@ -93,14 +95,14 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.error, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(child: Text(result.message ?? 'Registration failed')),
             ],
           ),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(16),
+          margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
@@ -108,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
   } else if (!_agreeToTerms) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: const Row(
           children: [
             Icon(Icons.warning, color: Colors.white),
             SizedBox(width: 8),
@@ -117,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
         ),
         backgroundColor: Colors.orange.shade600,
         behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.all(16),
+        margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
@@ -157,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                     children: [
                       // Header
                       Container(
-                        margin: EdgeInsets.only(bottom: 32),
+                        margin: const EdgeInsets.only(bottom: 32),
                         child: Column(
                           children: [
                             Container(
@@ -175,17 +177,17 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                     color: Colors.blue.shade200.withOpacity(0.5),
                                     spreadRadius: 3,
                                     blurRadius: 15,
-                                    offset: Offset(0, 5),
+                                    offset: const Offset(0, 5),
                                   ),
                                 ],
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.person_add,
                                 size: 40,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             Text(
                               'Join Gira Inshuti',
                               style: TextStyle(
@@ -195,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                 letterSpacing: -0.5,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               'Create your account to connect with our caring community',
                               style: TextStyle(
@@ -218,11 +220,11 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                               color: Colors.grey.withOpacity(0.1),
                               spreadRadius: 2,
                               blurRadius: 15,
-                              offset: Offset(0, 5),
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Form(
                           key: _formKey,
                           child: Column(
@@ -237,7 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   color: Colors.grey.shade800,
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               
                               // Title and Name Row
                               Row(
@@ -245,7 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   Expanded(
                                     flex: 1,
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedTitle,
+                                      initialValue: _selectedTitle,
                                       decoration: InputDecoration(
                                         labelText: 'Title',
                                         prefixIcon: Icon(Icons.person_outline, color: Colors.grey.shade600),
@@ -277,7 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                       },
                                     ),
                                   ),
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     flex: 2,
                                     child: TextFormField(
@@ -313,7 +315,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               
                               // Email
                               TextFormField(
@@ -347,7 +349,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   return null;
                                 },
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               
                               // Phone Number
                               TextFormField(
@@ -379,7 +381,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   return null;
                                 },
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               
                               // Age and Gender Row
                               Row(
@@ -418,10 +420,10 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                       },
                                     ),
                                   ),
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedGender,
+                                      initialValue: _selectedGender,
                                       decoration: InputDecoration(
                                         labelText: 'Gender',
                                         prefixIcon: Icon(Icons.people_outline, color: Colors.grey.shade600),
@@ -455,7 +457,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 24),
+                              const SizedBox(height: 24),
                               
                               // Account Security Section
                               Text(
@@ -466,7 +468,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   color: Colors.grey.shade800,
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               
                               // Password
                               TextFormField(
@@ -513,7 +515,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   return null;
                                 },
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               
                               // Confirm Password
                               TextFormField(
@@ -560,11 +562,11 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   return null;
                                 },
                               ),
-                              SizedBox(height: 24),
+                              const SizedBox(height: 24),
                               
                               // Terms and Privacy
                               Container(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: Colors.blue.shade50,
                                   borderRadius: BorderRadius.circular(12),
@@ -588,7 +590,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                             fontSize: 14,
                                             color: Colors.blue.shade800,
                                           ),
-                                          children: [
+                                          children: const [
                                             TextSpan(text: 'I agree to the '),
                                             TextSpan(
                                               text: 'Terms of Service',
@@ -609,7 +611,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       'Your privacy and confidentiality are important to us. All conversations with counselors are secure and confidential.',
                                       style: TextStyle(
@@ -620,7 +622,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
                               
                               // Register Button
                               Consumer<AuthService>(
@@ -630,7 +632,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue.shade700,
                                       foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(vertical: 16),
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -638,7 +640,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                       shadowColor: Colors.blue.shade200,
                                     ),
                                     child: authService.isLoading
-                                        ? SizedBox(
+                                        ? const SizedBox(
                                             height: 20,
                                             width: 20,
                                             child: CircularProgressIndicator(
@@ -646,7 +648,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                                               strokeWidth: 2,
                                             ),
                                           )
-                                        : Text(
+                                        : const Text(
                                             'Create Account',
                                             style: TextStyle(
                                               fontSize: 16,
@@ -663,7 +665,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
 
                       // Login Link
                       Container(
-                        margin: EdgeInsets.only(top: 20),
+                        margin: const EdgeInsets.only(top: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -689,8 +691,8 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
 
                       // Security Notice
                       Container(
-                        margin: EdgeInsets.only(top: 16),
-                        padding: EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50,
                           borderRadius: BorderRadius.circular(12),
@@ -703,7 +705,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                               color: Colors.green.shade700,
                               size: 20,
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'Your information is encrypted and secure. Only qualified counselors will have access to help you.',
