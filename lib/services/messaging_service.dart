@@ -5,8 +5,8 @@ import '../models/user.dart';
 import 'ai_priority_service.dart';
 
 class MessagingService extends ChangeNotifier {
-  List<Conversation> _conversations = [];
-  List<Message> _allMessages = [];
+  final List<Conversation> _conversations = [];
+  final List<Message> _allMessages = [];
   
   List<Conversation> get conversations => List.from(_conversations);
   List<Message> get allMessages => List.from(_allMessages);
@@ -232,7 +232,7 @@ class MessagingService extends ChangeNotifier {
       userId: '3', // Assuming user ID 3 exists
       counselorId: '2', // Counselor from auth service
       messages: [],
-      lastActivity: DateTime.now().subtract(Duration(hours: 1)),
+      lastActivity: DateTime.now().subtract(const Duration(hours: 1)),
       lastMessageStatus: MessageStatus.sent,
     );
 
@@ -244,7 +244,7 @@ class MessagingService extends ChangeNotifier {
         receiverId: '2',
         content: 'Hello, I\'ve been feeling really anxious lately and need someone to talk to.',
         priority: MessagePriority.high,
-        timestamp: DateTime.now().subtract(Duration(hours: 1)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
         aiEmojis: ['😰', '💛', '🤗', '💚'],
         urgencyScore: 0.6,
       ),
@@ -254,7 +254,7 @@ class MessagingService extends ChangeNotifier {
         receiverId: '3',
         content: 'I\'m here to help. Can you tell me more about what\'s been making you feel anxious?',
         priority: MessagePriority.normal,
-        timestamp: DateTime.now().subtract(Duration(minutes: 50)),
+        timestamp: DateTime.now().subtract(const Duration(minutes: 50)),
         status: MessageStatus.read,
         aiEmojis: ['💚', '🤔', '🌟'],
         urgencyScore: 0.1,
