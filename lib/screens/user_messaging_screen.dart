@@ -7,12 +7,14 @@ import '../models/message.dart';
 import 'chat_screen.dart';
 
 class MessagingScreen extends StatelessWidget {
+  const MessagingScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Messages'),
+        title: const Text('Messages'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -27,13 +29,13 @@ class MessagingScreen extends StatelessWidget {
               
               return unreadCount > 0
                 ? Container(
-                    margin: EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
                     child: CircleAvatar(
                       backgroundColor: Colors.red,
                       radius: 12,
                       child: Text(
                         unreadCount.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -41,7 +43,7 @@ class MessagingScreen extends StatelessWidget {
                       ),
                     ),
                   )
-                : SizedBox.shrink();
+                : const SizedBox.shrink();
             },
           ),
         ],
@@ -50,7 +52,7 @@ class MessagingScreen extends StatelessWidget {
         builder: (context, authService, messagingService, child) {
           final currentUser = authService.currentUser;
           if (currentUser == null) {
-            return Center(child: Text('Please log in to access messages'));
+            return const Center(child: Text('Please log in to access messages'));
           }
 
           final conversations = messagingService.getConversationsForUser(
@@ -63,7 +65,7 @@ class MessagingScreen extends StatelessWidget {
               // Quick actions for users
               if (currentUser.role == UserRole.user) ...[
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -75,14 +77,14 @@ class MessagingScreen extends StatelessWidget {
                           color: Colors.grey.shade800,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       SizedBox(
                         height: 100,
                         child: StreamBuilder<List<User>>(
                           stream: authService.getAllCounselors(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             }
 
                             if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -114,7 +116,7 @@ class MessagingScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
               ],
 
               // Conversations list
@@ -152,7 +154,7 @@ class MessagingScreen extends StatelessWidget {
   ) {
     return Container(
       width: 80,
-      margin: EdgeInsets.only(right: 12),
+      margin: const EdgeInsets.only(right: 12),
       child: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -180,7 +182,7 @@ class MessagingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               counselor.name.split(' ').first,
               style: TextStyle(
@@ -193,8 +195,8 @@ class MessagingScreen extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Container(
-              margin: EdgeInsets.only(top: 2),
-              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+              margin: const EdgeInsets.only(top: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
                 color: Colors.green.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -269,7 +271,7 @@ class MessagingScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     conversation.highestPriority.emoji,
-                    style: TextStyle(fontSize: 8),
+                    style: const TextStyle(fontSize: 8),
                   ),
                 ),
               ),
@@ -290,13 +292,13 @@ class MessagingScreen extends StatelessWidget {
             // AI emojis for last message (visible to counselors only)
             if (currentUser.role == UserRole.counselor && lastMessage.aiEmojis.isNotEmpty)
               Container(
-                margin: EdgeInsets.only(left: 4),
+                margin: const EdgeInsets.only(left: 4),
                 child: Text(
                   lastMessage.aiEmojis.take(2).join(''),
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               _formatTime(lastMessage.timestamp),
               style: TextStyle(
@@ -324,15 +326,15 @@ class MessagingScreen extends StatelessWidget {
                 ),
                 if (unreadCount > 0)
                   Container(
-                    margin: EdgeInsets.only(left: 8),
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    margin: const EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.blue.shade600,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       unreadCount.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -352,7 +354,7 @@ class MessagingScreen extends StatelessWidget {
   Widget _buildEmptyState(UserRole role) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -361,7 +363,7 @@ class MessagingScreen extends StatelessWidget {
               size: 64,
               color: Colors.grey.shade400,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               role == UserRole.user
                   ? 'No conversations yet'
@@ -372,7 +374,7 @@ class MessagingScreen extends StatelessWidget {
                 color: Colors.grey.shade600,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               role == UserRole.user
                   ? 'Tap on a counselor above to start a conversation'
