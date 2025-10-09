@@ -7,6 +7,8 @@ import '../models/message.dart';
 import '../screens/chat_screen.dart';
 
 class MessagesTab extends StatefulWidget {
+  const MessagesTab({super.key});
+
   @override
   _MessagesTabState createState() => _MessagesTabState();
 }
@@ -17,7 +19,7 @@ class _MessagesTabState extends State<MessagesTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Messages'),
+        title: const Text('Messages'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -33,17 +35,17 @@ class _MessagesTabState extends State<MessagesTab> {
               
               return unreadCount > 0
                 ? Container(
-                    margin: EdgeInsets.only(right: 16),
+                    margin: const EdgeInsets.only(right: 16),
                     child: Center(
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '$unreadCount new',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -52,7 +54,7 @@ class _MessagesTabState extends State<MessagesTab> {
                       ),
                     ),
                   )
-                : SizedBox.shrink();
+                : const SizedBox.shrink();
             },
           ),
         ],
@@ -66,7 +68,7 @@ class _MessagesTabState extends State<MessagesTab> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.login, size: 64, color: Colors.grey.shade400),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Please log in to access messages',
                     style: TextStyle(
@@ -93,14 +95,14 @@ class _MessagesTabState extends State<MessagesTab> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
+                        padding: const EdgeInsets.all(16),
+                        child: const Center(child: CircularProgressIndicator()),
                       );
                     }
 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Container(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         color: Colors.white,
                         child: Center(
                           child: Text(
@@ -119,7 +121,7 @@ class _MessagesTabState extends State<MessagesTab> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Row(
                               children: [
                                 Icon(
@@ -127,7 +129,7 @@ class _MessagesTabState extends State<MessagesTab> {
                                   color: Colors.green.shade700,
                                   size: 20,
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(
                                   'Available Counselors',
                                   style: TextStyle(
@@ -136,9 +138,9 @@ class _MessagesTabState extends State<MessagesTab> {
                                     color: Colors.grey.shade800,
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: Colors.green.shade50,
                                     borderRadius: BorderRadius.circular(10),
@@ -157,7 +159,7 @@ class _MessagesTabState extends State<MessagesTab> {
                           ),
                           Container(
                             height: 110,
-                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: counselors.length,
@@ -179,7 +181,7 @@ class _MessagesTabState extends State<MessagesTab> {
                               },
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                         ],
                       ),
                     );
@@ -196,7 +198,7 @@ class _MessagesTabState extends State<MessagesTab> {
               // Conversations Header
               if (conversations.isNotEmpty)
                 Container(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   color: Colors.white,
                   child: Row(
                     children: [
@@ -205,7 +207,7 @@ class _MessagesTabState extends State<MessagesTab> {
                         color: Colors.blue.shade700,
                         size: 20,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         currentUser.role == UserRole.counselor 
                           ? 'Client Conversations'
@@ -290,7 +292,7 @@ class _MessagesTabState extends State<MessagesTab> {
 
     return Container(
       width: 90,
-      margin: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -307,7 +309,7 @@ class _MessagesTabState extends State<MessagesTab> {
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.green.shade50,
               borderRadius: BorderRadius.circular(12),
@@ -349,7 +351,7 @@ class _MessagesTabState extends State<MessagesTab> {
                       ),
                   ],
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
                   counselor.name.split(' ').first,
                   style: TextStyle(
@@ -361,14 +363,14 @@ class _MessagesTabState extends State<MessagesTab> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.green.shade600,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Available',
                     style: TextStyle(
                       fontSize: 9,
@@ -398,7 +400,7 @@ class _MessagesTabState extends State<MessagesTab> {
         .length;
 
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       onTap: () {
         if (otherUser != null) {
           Navigator.push(
@@ -439,7 +441,7 @@ class _MessagesTabState extends State<MessagesTab> {
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     Icons.priority_high,
                     size: 10,
@@ -475,7 +477,7 @@ class _MessagesTabState extends State<MessagesTab> {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           if (lastMessage != null)
             Row(
               children: [
@@ -506,18 +508,18 @@ class _MessagesTabState extends State<MessagesTab> {
               lastMessage != null && 
               lastMessage.aiEmojis.isNotEmpty)
             Padding(
-              padding: EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.only(top: 4),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       lastMessage.aiEmojis.take(3).join(' '),
-                      style: TextStyle(fontSize: 10),
+                      style: const TextStyle(fontSize: 10),
                     ),
                   ),
                 ],
@@ -527,18 +529,18 @@ class _MessagesTabState extends State<MessagesTab> {
       ),
       trailing: unreadCount > 0
           ? Container(
-              padding: EdgeInsets.all(6),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.blue.shade600,
                 shape: BoxShape.circle,
               ),
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 minWidth: 24,
                 minHeight: 24,
               ),
               child: Text(
                 unreadCount.toString(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -558,7 +560,7 @@ class _MessagesTabState extends State<MessagesTab> {
     
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -575,7 +577,7 @@ class _MessagesTabState extends State<MessagesTab> {
                 color: isUser ? Colors.blue.shade400 : Colors.green.shade400,
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text(
               isUser 
                 ? 'Pour Your Heart Out' 
@@ -587,7 +589,7 @@ class _MessagesTabState extends State<MessagesTab> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               isUser
                 ? 'This is your safe space. Choose a counselor above to start a confidential conversation. They\'re here to listen, support, and guide you.'
@@ -600,9 +602,9 @@ class _MessagesTabState extends State<MessagesTab> {
               textAlign: TextAlign.center,
             ),
             if (isUser) ...[
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(16),
@@ -615,7 +617,7 @@ class _MessagesTabState extends State<MessagesTab> {
                       color: Colors.amber.shade700,
                       size: 32,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
                       'Remember',
                       style: TextStyle(
@@ -624,7 +626,7 @@ class _MessagesTabState extends State<MessagesTab> {
                         color: Colors.amber.shade900,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Every conversation is completely confidential. Our counselors are here to help you navigate life\'s challenges with empathy and understanding.',
                       style: TextStyle(
