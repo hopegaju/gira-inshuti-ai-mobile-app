@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class SettingsTab extends StatelessWidget {
+  const SettingsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
         backgroundColor: Colors.grey.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -19,7 +21,7 @@ class SettingsTab extends StatelessWidget {
         builder: (context, authService, child) {
           final user = authService.currentUser;
           return SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -33,7 +35,7 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Update your personal details',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Profile settings coming soon!')),
+                          const SnackBar(content: Text('Profile settings coming soon!')),
                         );
                       },
                     ),
@@ -43,14 +45,14 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Update your account password',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Password change coming soon!')),
+                          const SnackBar(content: Text('Password change coming soon!')),
                         );
                       },
                     ),
                   ],
                 ),
                 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Privacy settings
                 _buildSettingsSection(
@@ -62,7 +64,7 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Control what content you see',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Content filtering coming soon!')),
+                          const SnackBar(content: Text('Content filtering coming soon!')),
                         );
                       },
                     ),
@@ -72,14 +74,14 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Manage your anonymity settings',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Anonymity settings coming soon!')),
+                          const SnackBar(content: Text('Anonymity settings coming soon!')),
                         );
                       },
                     ),
                   ],
                 ),
                 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // App settings
                 _buildSettingsSection(
@@ -91,7 +93,7 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Manage push notifications',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Notification settings coming soon!')),
+                          const SnackBar(content: Text('Notification settings coming soon!')),
                         );
                       },
                     ),
@@ -101,7 +103,7 @@ class SettingsTab extends StatelessWidget {
                       subtitle: 'Get help or contact support',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Help & Support coming soon!')),
+                          const SnackBar(content: Text('Help & Support coming soon!')),
                         );
                       },
                     ),
@@ -116,21 +118,21 @@ class SettingsTab extends StatelessWidget {
                   ],
                 ),
                 
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 
                 // Logout button
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
                       _showLogoutDialog(context, authService);
                     },
-                    icon: Icon(Icons.logout),
-                    label: Text('Logout'),
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Logout'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red.shade600,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -138,7 +140,7 @@ class SettingsTab extends StatelessWidget {
                   ),
                 ),
                 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // App info
                 Center(
@@ -152,7 +154,7 @@ class SettingsTab extends StatelessWidget {
                           color: Colors.grey.shade700,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'Version 1.0.0',
                         style: TextStyle(
@@ -160,7 +162,7 @@ class SettingsTab extends StatelessWidget {
                           color: Colors.grey.shade500,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'Mental Health Support Community',
                         style: TextStyle(
@@ -189,7 +191,7 @@ class SettingsTab extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -197,7 +199,7 @@ class SettingsTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Text(
               title,
               style: TextStyle(
@@ -297,7 +299,7 @@ class SettingsTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: Text('Logout'),
+              child: const Text('Logout'),
             ),
           ],
         );
@@ -326,13 +328,13 @@ class SettingsTab extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.people,
                   size: 20,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Text(
                 'About Gira Inshuti',
                 style: TextStyle(
@@ -353,12 +355,12 @@ class SettingsTab extends StatelessWidget {
                   color: Colors.grey.shade700,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'Gira Inshuti is a mental health support community designed to connect and support youth in Rwanda.',
                 style: TextStyle(color: Colors.grey.shade600),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'Features:',
                 style: TextStyle(
@@ -366,7 +368,7 @@ class SettingsTab extends StatelessWidget {
                   color: Colors.grey.shade700,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 '• Anonymous community support\n• Professional counselor access\n• AI-powered content analysis\n• Safe and secure messaging',
                 style: TextStyle(
