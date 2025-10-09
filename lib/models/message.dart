@@ -1,5 +1,4 @@
 // models/message.dart
-import 'package:flutter/foundation.dart';
 
 enum MessagePriority { 
   low(1), 
