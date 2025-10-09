@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -14,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   _navigateToLogin() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
     Navigator.pushReplacementNamed(context, '/login');
   }
 
@@ -52,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(60),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 10,
@@ -66,8 +68,8 @@ class _SplashScreenState extends State<SplashScreen>
                   color: Colors.blue.shade700,
                 ),
               ),
-              SizedBox(height: 30),
-              Text(
+              const SizedBox(height: 30),
+              const Text(
                 'Gira Inshuti',
                 style: TextStyle(
                   fontSize: 32,
@@ -75,8 +77,8 @@ class _SplashScreenState extends State<SplashScreen>
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Connecting Hearts, Building Communities',
                 style: TextStyle(
                   fontSize: 16,
