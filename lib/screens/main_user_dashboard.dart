@@ -10,6 +10,8 @@ import '../tabs/resources_tab.dart';
 import '../tabs/settings_tab.dart';
 
 class MainUserDashboard extends StatefulWidget {
+  const MainUserDashboard({super.key});
+
   @override
   _MainUserDashboardState createState() => _MainUserDashboardState();
 }
@@ -31,7 +33,7 @@ class _MainUserDashboardState extends State<MainUserDashboard> {
       body: Consumer<AuthService>(
         builder: (context, authService, child) {
           if (authService.currentUser == null) {
-            return Center(child: Text('Please log in to access dashboard'));
+            return const Center(child: Text('Please log in to access dashboard'));
           }
           return _tabs[_currentIndex];
         },
@@ -57,31 +59,31 @@ class _MainUserDashboardState extends State<MainUserDashboard> {
             backgroundColor: Colors.white,
             elevation: 8,
             items: [
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
                 icon: Stack(
                   children: [
-                    Icon(Icons.chat),
+                    const Icon(Icons.chat),
                     if (unreadCount > 0)
                       Positioned(
                         right: 0,
                         top: 0,
                         child: Container(
-                          padding: EdgeInsets.all(2),
+                          padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          constraints: BoxConstraints(
+                          constraints: const BoxConstraints(
                             minWidth: 12,
                             minHeight: 12,
                           ),
                           child: Text(
                             unreadCount.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 8,
                               fontWeight: FontWeight.bold,
@@ -94,15 +96,15 @@ class _MainUserDashboardState extends State<MainUserDashboard> {
                 ),
                 label: 'Messages',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.forum),
                 label: 'Community',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.library_books),
                 label: 'Resources',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
                 label: 'Settings',
               ),
