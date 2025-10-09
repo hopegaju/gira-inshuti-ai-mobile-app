@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class ResourcesTab extends StatefulWidget {
+  const ResourcesTab({super.key});
+
   @override
   _ResourcesTabState createState() => _ResourcesTabState();
 }
@@ -13,7 +15,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
   final Map<String, CategoryData> _categories = {
     'Resilience & Strength': CategoryData(
       icon: Icons.favorite,
-      gradientColors: [Color(0xFFFF6B6B), Color(0xFFEE5A6F)], // Candy Apple Red
+      gradientColors: [const Color(0xFFFF6B6B), const Color(0xFFEE5A6F)], // Candy Apple Red
       quotes: [
         "Sometimes the bravest thing you can do is rest.",
         "Healing is not linear, it's a spiral.",
@@ -34,7 +36,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     ),
     'Self-Compassion': CategoryData(
       icon: Icons.self_improvement,
-      gradientColors: [Color(0xFFFFB5C5), Color(0xFFFFD4E0)], // Powder Pink
+      gradientColors: [const Color(0xFFFFB5C5), const Color(0xFFFFD4E0)], // Powder Pink
       quotes: [
         "Speak to yourself as you would to someone you love. – Brené Brown",
         "Rest is not idleness, it's self-respect.",
@@ -55,7 +57,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     ),
     'Perspective & Growth': CategoryData(
       icon: Icons.trending_up,
-      gradientColors: [Color(0xFFFFE66D), Color(0xFFF9DB6D)], // Butter Yellow
+      gradientColors: [const Color(0xFFFFE66D), const Color(0xFFF9DB6D)], // Butter Yellow
       quotes: [
         "Your current chapter is not your whole story.",
         "Change is painful, but nothing is as painful as staying stuck. – Mandy Hale",
@@ -76,7 +78,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     ),
     'Hope & Encouragement': CategoryData(
       icon: Icons.wb_sunny,
-      gradientColors: [Color(0xFF87CEEB), Color(0xFF9ED8E8)], // Sky Blue
+      gradientColors: [const Color(0xFF87CEEB), const Color(0xFF9ED8E8)], // Sky Blue
       quotes: [
         "Even the darkest night will end, and the sun will rise. – Victor Hugo",
         "You've survived so much already—don't stop here.",
@@ -97,7 +99,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     ),
     'Mindset & Mental Clarity': CategoryData(
       icon: Icons.psychology,
-      gradientColors: [Color(0xFFFF7F50), Color(0xFFFF9F80)], // Sunset Coral
+      gradientColors: [const Color(0xFFFF7F50), const Color(0xFFFF9F80)], // Sunset Coral
       quotes: [
         "Don't believe everything you think.",
         "You don't have to control your thoughts, only how you respond. – Dan Millman",
@@ -155,7 +157,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Resources'),
+        title: const Text('Resources'),
         backgroundColor: Colors.purple.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -170,7 +172,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Text(
                     'Choose Your Focus',
                     style: TextStyle(
@@ -182,7 +184,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
                     children: [
                       _buildCategoryChip('All', Icons.all_inclusive, [Colors.purple.shade400, Colors.purple.shade600]),
@@ -192,7 +194,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
                           entry.value.icon,
                           entry.value.gradientColors,
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                 ),
@@ -202,12 +204,12 @@ class _ResourcesTabState extends State<ResourcesTab> {
 
           // Quote Count
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             color: Colors.grey.shade100,
             child: Row(
               children: [
                 Icon(Icons.format_quote, size: 16, color: Colors.grey.shade600),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   '${quotes.length} ${quotes.length == 1 ? 'quote' : 'quotes'}',
                   style: TextStyle(
@@ -225,7 +227,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
             child: quotes.isEmpty
                 ? _buildEmptyState()
                 : GridView.builder(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
                       crossAxisSpacing: 16,
@@ -247,7 +249,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
     final isSelected = _selectedCategory == label;
     
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: FilterChip(
         selected: isSelected,
         label: Row(
@@ -258,7 +260,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
               size: 16,
               color: isSelected ? Colors.white : colors[0],
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
@@ -283,7 +285,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
             width: isSelected ? 2 : 1,
           ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
     );
   }
@@ -302,7 +304,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
             color: item.gradientColors[0].withOpacity(0.3),
             spreadRadius: 1,
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -314,14 +316,14 @@ class _ResourcesTabState extends State<ResourcesTab> {
             _showQuoteDialog(item);
           },
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
@@ -332,7 +334,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
                         color: Colors.white,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Icon(
                       Icons.format_quote,
                       size: 40,
@@ -340,12 +342,12 @@ class _ResourcesTabState extends State<ResourcesTab> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Expanded(
                   child: Center(
                     child: Text(
                       item.quote,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
@@ -356,16 +358,16 @@ class _ResourcesTabState extends State<ResourcesTab> {
                     ),
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     item.category,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -395,7 +397,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
             ),
             borderRadius: BorderRadius.circular(24),
           ),
-          padding: EdgeInsets.all(32),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -404,10 +406,10 @@ class _ResourcesTabState extends State<ResourcesTab> {
                 size: 48,
                 color: Colors.white,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
                 item.quote,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
@@ -415,23 +417,23 @@ class _ResourcesTabState extends State<ResourcesTab> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   item.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -440,35 +442,35 @@ class _ResourcesTabState extends State<ResourcesTab> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Quote saved to your favorites!'),
+                          content: const Text('Quote saved to your favorites!'),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: item.gradientColors[0],
                         ),
                       );
                     },
-                    icon: Icon(Icons.favorite_border, color: Colors.white),
-                    label: Text('Save', style: TextStyle(color: Colors.white)),
+                    icon: const Icon(Icons.favorite_border, color: Colors.white),
+                    label: const Text('Save', style: TextStyle(color: Colors.white)),
                   ),
                   TextButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Sharing feature coming soon!'),
+                          content: const Text('Sharing feature coming soon!'),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: item.gradientColors[0],
                         ),
                       );
                     },
-                    icon: Icon(Icons.share, color: Colors.white),
-                    label: Text('Share', style: TextStyle(color: Colors.white)),
+                    icon: const Icon(Icons.share, color: Colors.white),
+                    label: const Text('Share', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(
+                child: const Text(
                   'Close',
                   style: TextStyle(
                     color: Colors.white,
@@ -486,7 +488,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -495,7 +497,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
               size: 64,
               color: Colors.grey.shade400,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'No quotes found',
               style: TextStyle(
@@ -504,7 +506,7 @@ class _ResourcesTabState extends State<ResourcesTab> {
                 color: Colors.grey.shade600,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Try selecting a different category',
               style: TextStyle(
