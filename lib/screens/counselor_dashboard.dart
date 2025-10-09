@@ -4,12 +4,14 @@ import '../services/auth_service.dart';
 import '../models/user.dart';
 
 class CounselorDashboard extends StatelessWidget {
+  const CounselorDashboard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Counselor Dashboard'),
+        title: const Text('Counselor Dashboard'),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -28,13 +30,13 @@ class CounselorDashboard extends StatelessWidget {
                   ),
                 ),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: 'logout',
                     child: ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('Logout'),
                       contentPadding: EdgeInsets.zero,
                     ),
-                    value: 'logout',
                   ),
                 ],
                 onSelected: (value) {
@@ -55,14 +57,14 @@ class CounselorDashboard extends StatelessWidget {
 
           // Handle the case where getAllUsers returns null or is a stream
           if (allUsersStream == null) {
-            return Center(child: Text('No access to user data'));
+            return const Center(child: Text('No access to user data'));
           }
 
           return StreamBuilder<List<User>>(
             stream: allUsersStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (snapshot.hasError) {
@@ -73,13 +75,13 @@ class CounselorDashboard extends StatelessWidget {
               final regularUsers = allUsers.where((u) => u.role == UserRole.user).toList();
 
               return SingleChildScrollView(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Colors.green.shade700, Colors.green.shade500],
@@ -93,24 +95,24 @@ class CounselorDashboard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.psychology,
                                 color: Colors.white,
                                 size: 32,
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     user?.name ?? 'Counselor',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     'Professional Counselor',
                                     style: TextStyle(
                                       color: Colors.white70,
@@ -124,7 +126,7 @@ class CounselorDashboard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       children: [
                         Expanded(
@@ -135,7 +137,7 @@ class CounselorDashboard extends StatelessWidget {
                             Colors.blue,
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: _buildStatCard(
                             'Total Sessions',
@@ -144,7 +146,7 @@ class CounselorDashboard extends StatelessWidget {
                             Colors.orange,
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: _buildStatCard(
                             'This Week',
@@ -155,7 +157,7 @@ class CounselorDashboard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Text(
                       'Quick Actions',
                       style: TextStyle(
@@ -164,10 +166,10 @@ class CounselorDashboard extends StatelessWidget {
                         color: Colors.grey.shade800,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     GridView.count(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
@@ -179,7 +181,7 @@ class CounselorDashboard extends StatelessWidget {
                           color: Colors.blue,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Scheduling feature coming soon!')),
+                              const SnackBar(content: Text('Scheduling feature coming soon!')),
                             );
                           },
                         ),
@@ -190,7 +192,7 @@ class CounselorDashboard extends StatelessWidget {
                           color: Colors.green,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Messaging feature coming soon!')),
+                              const SnackBar(content: Text('Messaging feature coming soon!')),
                             );
                           },
                         ),
@@ -201,7 +203,7 @@ class CounselorDashboard extends StatelessWidget {
                           color: Colors.orange,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Reports feature coming soon!')),
+                              const SnackBar(content: Text('Reports feature coming soon!')),
                             );
                           },
                         ),
@@ -212,13 +214,13 @@ class CounselorDashboard extends StatelessWidget {
                           color: Colors.purple,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Resources feature coming soon!')),
+                              const SnackBar(content: Text('Resources feature coming soon!')),
                             );
                           },
                         ),
                       ],
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Text(
                       'Recent Clients',
                       style: TextStyle(
@@ -227,7 +229,7 @@ class CounselorDashboard extends StatelessWidget {
                         color: Colors.grey.shade800,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -237,13 +239,13 @@ class CounselorDashboard extends StatelessWidget {
                             color: Colors.grey.withOpacity(0.1),
                             spreadRadius: 1,
                             blurRadius: 10,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: regularUsers.isEmpty
                           ? Padding(
-                              padding: EdgeInsets.all(40),
+                              padding: const EdgeInsets.all(40),
                               child: Column(
                                 children: [
                                   Icon(
@@ -251,7 +253,7 @@ class CounselorDashboard extends StatelessWidget {
                                     size: 48,
                                     color: Colors.grey.shade400,
                                   ),
-                                  SizedBox(height: 16),
+                                  const SizedBox(height: 16),
                                   Text(
                                     'No clients yet',
                                     style: TextStyle(
@@ -271,9 +273,9 @@ class CounselorDashboard extends StatelessWidget {
                             )
                           : ListView.separated(
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: regularUsers.length,
-                              separatorBuilder: (context, index) => Divider(height: 1),
+                              separatorBuilder: (context, index) => const Divider(height: 1),
                               itemBuilder: (context, index) {
                                 final client = regularUsers[index];
                                 return ListTile(
@@ -289,15 +291,15 @@ class CounselorDashboard extends StatelessWidget {
                                   ),
                                   title: Text(
                                     client.name,
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(fontWeight: FontWeight.w600),
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(client.email),
-                                      SizedBox(height: 4),
+                                      const SizedBox(height: 4),
                                       Container(
-                                        padding: EdgeInsets.symmetric(
+                                        padding: const EdgeInsets.symmetric(
                                           horizontal: 8,
                                           vertical: 2,
                                         ),
@@ -345,7 +347,7 @@ class CounselorDashboard extends StatelessWidget {
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -354,7 +356,7 @@ class CounselorDashboard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -373,7 +375,7 @@ class CounselorDashboard extends StatelessWidget {
               size: 20,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
@@ -382,7 +384,7 @@ class CounselorDashboard extends StatelessWidget {
               color: Colors.grey.shade800,
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             title,
             style: TextStyle(
@@ -406,7 +408,7 @@ class CounselorDashboard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -415,7 +417,7 @@ class CounselorDashboard extends StatelessWidget {
               color: Colors.grey.withOpacity(0.1),
               spreadRadius: 1,
               blurRadius: 10,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -435,7 +437,7 @@ class CounselorDashboard extends StatelessWidget {
                 size: 24,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
@@ -445,7 +447,7 @@ class CounselorDashboard extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               subtitle,
               style: TextStyle(
