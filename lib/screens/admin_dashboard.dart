@@ -4,6 +4,8 @@ import '../services/auth_service.dart';
 import '../models/user.dart';
 
 class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({super.key});
+
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
@@ -41,29 +43,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Create Counselor Account'),
+        title: const Text('Create Counselor Account'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Full Name',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
@@ -77,7 +79,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               Navigator.pop(context);
               _clearControllers();
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -93,21 +95,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
               
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Counselor account created successfully!'),
                     backgroundColor: Colors.green,
                   ),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Failed to create counselor account'),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: Text('Create'),
+            child: const Text('Create'),
           ),
         ],
       ),
@@ -125,7 +127,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Admin Dashboard'),
+        title: const Text('Admin Dashboard'),
         backgroundColor: Colors.red.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -144,13 +146,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                 ),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: 'logout',
                     child: ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('Logout'),
                       contentPadding: EdgeInsets.zero,
                     ),
-                    value: 'logout',
                   ),
                 ],
                 onSelected: (value) {
@@ -180,13 +182,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text(
               'No access to user data',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('Current user: ${authService.currentUser?.email ?? "none"}'),
             Text('Role: ${authService.currentUser?.role ?? "none"}'),
             Text('Auth mode: ${authService.authMode}'),
@@ -204,7 +206,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         debugPrint('Has data: ${snapshot.hasData}');
         debugPrint('Data length: ${snapshot.data?.length}');
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -213,15 +215,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error_outline, size: 64, color: Colors.red),
-                SizedBox(height: 16),
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
                 Text('Error: ${snapshot.error}'),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {}); // Force rebuild
                   },
-                  child: Text('Retry'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
@@ -234,14 +236,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
         final adminCount = users.where((u) => u.role == UserRole.admin).length;
 
         return SingleChildScrollView(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Your header container
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.red.shade700, Colors.red.shade500],
@@ -255,16 +257,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.admin_panel_settings,
                           color: Colors.white,
                           size: 32,
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Administrator',
                               style: TextStyle(
                                 color: Colors.white,
@@ -274,7 +276,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             ),
                             Text(
                               authService.currentUser?.name ?? 'Admin',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 14,
                               ),
@@ -293,9 +295,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
               // User list section with users from snapshot
               ListView.separated(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: users.length,
-                separatorBuilder: (context, index) => Divider(height: 1),
+                separatorBuilder: (context, index) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final user = users[index];
                   return ListTile(
@@ -308,17 +310,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     title: Text(
                       user.name,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(user.email),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 2,
                               ),
@@ -335,9 +337,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 2,
                               ),
@@ -395,15 +397,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateCounselorDialog,
         backgroundColor: Colors.red.shade700,
-        child: Icon(Icons.add),
         tooltip: 'Create Counselor Account',
+        child: Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -412,7 +414,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -431,7 +433,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               size: 20,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
@@ -440,7 +442,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               color: Colors.grey.shade800,
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             title,
             style: TextStyle(
