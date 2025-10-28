@@ -392,31 +392,62 @@ class AuthService  extends ChangeNotifier {
   }
 
   // Load user from Firestore
-  Future<void> _loadUserFromFirestore(String uid) async {
-    try {
-      final doc = await _firestore.collection('users').doc(uid).get();
+  // Replace the _loadUserFromFirestore method in auth_service.dart with this:
+
+Future<void> _loadUserFromFirestore(String uid) async {
+  try {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    
+    if (doc.exists) {
+      final data = doc.data()!;
       
-      if (doc.exists) {
-        final data = doc.data()!;
-        _currentUser = User(
-          id: uid,
-          email: data['email'] ?? '',
-          name: data['name'] ?? '',
-          role: _parseUserRole(data['role']),
-          createdAt: (data['createdAt'] as Timestamp).toDate(),
-          isActive: data['isActive'] ?? true,
-          gender: data['gender'],
-        );
-        
-        _needsOnboarding = _currentUser!.gender == null || 
-                          _currentUser!.name.isEmpty ||
-                          data['onboardingCompleted'] != true;
+      // Debug: Print the raw data to see what we're getting
+      debugPrint('Loading user data: $data');
+      
+      // Handle createdAt field - check multiple possible field names and handle null
+      DateTime createdAt;
+      try {
+        // Try lowercase first (your code expects this)
+        if (data['createdAt'] != null) {
+          createdAt = (data['createdAt'] as Timestamp).toDate();
+        } 
+        // Try uppercase (what's in your Firebase)
+        else if (data['CreatedAt'] != null) {
+          createdAt = (data['CreatedAt'] as Timestamp).toDate();
+        } 
+        // Fallback to current time
+        else {
+          debugPrint('Warning: createdAt field is null, using current time');
+          createdAt = DateTime.now();
+        }
+      } catch (e) {
+        debugPrint('Error parsing createdAt: $e, using current time');
+        createdAt = DateTime.now();
       }
-    } catch (e) {
-      debugPrint('Error loading user from Firestore: $e');
-      _errorMessage = 'Failed to load user data';
+      
+      _currentUser = User(
+        id: uid,
+        email: data['email'] ?? '',
+        name: data['name'] ?? '',
+        role: _parseUserRole(data['role']),
+        createdAt: createdAt,
+        isActive: data['isActive'] ?? true,
+        gender: data['gender'],
+      );
+      
+      _needsOnboarding = _currentUser!.gender == null || 
+                        _currentUser!.name.isEmpty ||
+                        data['onboardingCompleted'] != true;
+      
+      debugPrint('✅ Successfully loaded user: ${_currentUser!.email} with role: ${_currentUser!.role}');
+    } else {
+      debugPrint('❌ User document does not exist for UID: $uid');
     }
+  } catch (e) {
+    debugPrint('❌ Error loading user from Firestore: $e');
+    _errorMessage = 'Failed to load user data';
   }
+}
 
   // Parse user role
   UserRole _parseUserRole(String? role) {
@@ -619,7 +650,7 @@ class AuthService  extends ChangeNotifier {
     debugPrint('Auth mode: $_authMode');
     
     // Keep the role check - it's important for security!
-    if (_currentUser?.role != UserRole.admin) {
+    if (_currentUser?.role != UserRole.admin && _currentUser?.role != UserRole.counselor) {
       debugPrint('User is not admin, returning null');
       return null;
     }
@@ -682,7 +713,7 @@ class AuthService  extends ChangeNotifier {
   }
     // Create counselor account (Admin only)
   Future<bool> createCounselor(String email, String name, String password, {String? gender}) async {
-    if (_currentUser?.role != UserRole.admin) return false;
+    if (_currentUser?.role != UserRole.admin && _currentUser?.role != UserRole.counselor) return false;
 
     // Demo mode - not supported
     if (_authMode == AuthMode.demo) {
