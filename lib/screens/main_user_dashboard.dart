@@ -8,6 +8,7 @@ import '../tabs/messages_tab.dart';
 import '../tabs/community_tab.dart';
 import '../tabs/resources_tab.dart';
 import '../tabs/settings_tab.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class MainUserDashboard extends StatefulWidget {
   const MainUserDashboard({super.key});
@@ -54,7 +55,7 @@ class _MainUserDashboardState extends State<MainUserDashboard> {
               });
             },
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.blue.shade700,
+            selectedItemColor: const Color.fromARGB(255, 168, 18, 65),
             unselectedItemColor: Colors.grey.shade600,
             backgroundColor: Colors.white,
             elevation: 8,
@@ -104,6 +105,7 @@ class _MainUserDashboardState extends State<MainUserDashboard> {
                 icon: Icon(Icons.library_books),
                 label: 'Resources',
               ),
+
               const BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
                 label: 'Settings',
