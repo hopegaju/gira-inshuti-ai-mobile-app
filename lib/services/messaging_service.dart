@@ -1,5 +1,5 @@
-// services/messaging_service.dart
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/message.dart';
 import '../models/user.dart';
 import 'ai_priority_service.dart';
@@ -7,31 +7,151 @@ import 'ai_priority_service.dart';
 class MessagingService extends ChangeNotifier {
   final List<Conversation> _conversations = [];
   final List<Message> _allMessages = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isFirebaseMode = true;
   
   List<Conversation> get conversations => List.from(_conversations);
   List<Message> get allMessages => List.from(_allMessages);
 
   // Get conversations for a specific user
-  List<Conversation> getConversationsForUser(String userId, UserRole role) {
-    return _conversations.where((conv) {
-      if (role == UserRole.user) {
-        return conv.userId == userId;
-      } else if (role == UserRole.counselor) {
-        return conv.counselorId == userId;
-      } else if (role == UserRole.admin) {
-        return true; // Admins can see all conversations
+  Stream<List<Conversation>> getConversationsForUser(String userId, UserRole role) {
+    if (!_isFirebaseMode) {
+      // Demo mode - return local data as stream
+      final filtered = _conversations.where((conv) {
+        if (role == UserRole.user) {
+          return conv.userId == userId;
+        } else if (role == UserRole.counselor) {
+          return conv.counselorId == userId;
+        } else if (role == UserRole.admin) {
+          return true;
+        }
+        return false;
+      }).toList();
+      return Stream.value(filtered);
+    }
+
+    // Firebase mode
+    Query query = _firestore.collection('conversations');
+    
+    if (role == UserRole.user) {
+      query = query.where('userId', isEqualTo: userId);
+    } else if (role == UserRole.counselor) {
+      query = query.where('counselorId', isEqualTo: userId);
+    }
+    // Admin sees all conversations (no filter)
+
+    return query.snapshots().asyncMap((snapshot) async {
+      List<Conversation> conversations = [];
+      
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        
+        // Get the last message for this conversation
+        final messagesSnapshot = await _firestore
+            .collection('conversations')
+            .doc(doc.id)
+            .collection('messages')
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .get();
+        
+        Message? lastMessage;
+        MessagePriority highestPriority = MessagePriority.low;
+        
+        if (messagesSnapshot.docs.isNotEmpty) {
+          final messageData = messagesSnapshot.docs.first.data();
+          
+          // Debug: Print the emoji data
+          debugPrint('📱 Message aiEmojis from Firestore: ${messageData['aiEmojis']}');
+          
+          lastMessage = Message(
+            id: messagesSnapshot.docs.first.id,
+            senderId: messageData['senderId'] ?? '',
+            receiverId: messageData['receiverId'] ?? '',
+            content: messageData['content'] ?? '',
+            priority: _parseMessagePriority(messageData['priority']),
+            timestamp: (messageData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+            status: _parseMessageStatus(messageData['status']),
+            replyToId: messageData['replyToId'],
+            aiEmojis: List<String>.from(messageData['aiEmojis'] ?? []),
+            urgencyScore: (messageData['urgencyScore'] ?? 0.0).toDouble(),
+          );
+          highestPriority = lastMessage.priority;
+          
+          // Debug: Confirm emoji was parsed
+          debugPrint('✅ Message created with emojis: ${lastMessage.aiEmojis}');
+        }
+        
+        // Handle null lastActivity from FieldValue.serverTimestamp()
+        DateTime lastActivity;
+        if (data['lastActivity'] != null) {
+          lastActivity = (data['lastActivity'] as Timestamp).toDate();
+        } else {
+          lastActivity = DateTime.now();
+        }
+        
+        // Handle null lastMessageStatus
+        MessageStatus lastMessageStatus;
+        if (data['lastMessageStatus'] != null) {
+          lastMessageStatus = _parseMessageStatus(data['lastMessageStatus']);
+        } else {
+          lastMessageStatus = MessageStatus.sent;
+        }
+        
+        conversations.add(Conversation(
+          id: doc.id,
+          userId: data['userId'] ?? '',
+          counselorId: data['counselorId'] ?? '',
+          messages: lastMessage != null ? [lastMessage] : [],
+          lastActivity: lastActivity,
+          lastMessageStatus: lastMessageStatus,
+          isActive: data['isActive'] ?? true,
+        ));
       }
-      return false;
-    }).toList();
+      
+      return conversations;
+    });
   }
 
   // Get messages for a specific conversation
-  List<Message> getMessagesForConversation(String conversationId) {
-    final conversation = _conversations.firstWhere(
-      (conv) => conv.id == conversationId,
-      orElse: () => throw Exception('Conversation not found'),
-    );
-    return List.from(conversation.messages);
+  Stream<List<Message>> getMessagesForConversation(String conversationId) {
+    if (!_isFirebaseMode) {
+      // Demo mode
+      try {
+        final conversation = _conversations.firstWhere(
+          (conv) => conv.id == conversationId,
+          orElse: () => throw Exception('Conversation not found'),
+        );
+        return Stream.value(List.from(conversation.messages));
+      } catch (e) {
+        return Stream.value([]);
+      }
+    }
+
+    // Firebase mode
+    return _firestore
+        .collection('conversations')
+        .doc(conversationId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return Message(
+          id: doc.id,
+          senderId: data['senderId'] ?? '',
+          receiverId: data['receiverId'] ?? '',
+          content: data['content'] ?? '',
+          priority: _parseMessagePriority(data['priority']),
+          timestamp: (data['timestamp'] as Timestamp).toDate(),
+          status: _parseMessageStatus(data['status']),
+          replyToId: data['replyToId'],
+          aiEmojis: List<String>.from(data['aiEmojis'] ?? []),
+          urgencyScore: (data['urgencyScore'] ?? 0.0).toDouble(),
+        );
+      }).toList();
+    });
   }
 
   // Send a new message
@@ -45,65 +165,143 @@ class MessagingService extends ChangeNotifier {
       // Analyze message with AI
       final analysis = AIPriorityService.analyzeMessage(content);
       
-      // Create the message
-      final message = Message(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        senderId: senderId,
-        receiverId: receiverId,
-        content: content,
-        priority: analysis.priority,
-        timestamp: DateTime.now(),
-        replyToId: replyToId,
-        aiEmojis: analysis.suggestedEmojis,
-        urgencyScore: analysis.urgencyScore,
-      );
+      final messageData = {
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'content': content,
+        'priority': analysis.priority.toString().split('.').last,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': MessageStatus.sent.toString().split('.').last,
+        'replyToId': replyToId,
+        'aiEmojis': analysis.suggestedEmojis,
+        'urgencyScore': analysis.urgencyScore,
+      };
 
-      // Find or create conversation
-      Conversation? conversation = _conversations.firstWhere(
-        (conv) => 
-          (conv.userId == senderId && conv.counselorId == receiverId) ||
-          (conv.userId == receiverId && conv.counselorId == senderId),
-        orElse: () => Conversation(
+      if (!_isFirebaseMode) {
+        // Demo mode - keep existing logic
+        final message = Message(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          userId: senderId,
-          counselorId: receiverId,
-          messages: [],
+          senderId: senderId,
+          receiverId: receiverId,
+          content: content,
+          priority: analysis.priority,
+          timestamp: DateTime.now(),
+          replyToId: replyToId,
+          aiEmojis: analysis.suggestedEmojis,
+          urgencyScore: analysis.urgencyScore,
+        );
+
+        Conversation? conversation = _conversations.firstWhere(
+          (conv) => 
+            (conv.userId == senderId && conv.counselorId == receiverId) ||
+            (conv.userId == receiverId && conv.counselorId == senderId),
+          orElse: () => Conversation(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            userId: senderId,
+            counselorId: receiverId,
+            messages: [],
+            lastActivity: DateTime.now(),
+            lastMessageStatus: MessageStatus.sent,
+          ),
+        );
+
+        if (!_conversations.contains(conversation)) {
+          _conversations.add(conversation);
+        }
+
+        final updatedMessages = List<Message>.from(conversation.messages)..add(message);
+        final updatedConversation = Conversation(
+          id: conversation.id,
+          userId: conversation.userId,
+          counselorId: conversation.counselorId,
+          messages: updatedMessages,
           lastActivity: DateTime.now(),
           lastMessageStatus: MessageStatus.sent,
-        ),
-      );
+          isActive: conversation.isActive,
+        );
 
-      // If it's a new conversation, add it to the list
-      if (!_conversations.contains(conversation)) {
-        _conversations.add(conversation);
+        final conversationIndex = _conversations.indexWhere((c) => c.id == conversation.id);
+        _conversations[conversationIndex] = updatedConversation;
+        _allMessages.add(message);
+        _sortConversationsByPriority();
+        notifyListeners();
+        return true;
+      }
+
+      // Firebase mode
+      // Determine userId and counselorId properly
+      String conversationUserId;
+      String conversationCounselorId;
+
+      // Fetch sender and receiver roles
+      final senderDoc = await _firestore.collection('users').doc(senderId).get();
+      final receiverDoc = await _firestore.collection('users').doc(receiverId).get();
+      
+      final senderRole = senderDoc.data()?['role'] ?? 'user';
+      final receiverRole = receiverDoc.data()?['role'] ?? 'user';
+
+      // The regular user should always be userId, counselor should be counselorId
+      if (senderRole == 'user') {
+        conversationUserId = senderId;
+        conversationCounselorId = receiverId;
+      } else if (receiverRole == 'user') {
+        conversationUserId = receiverId;
+        conversationCounselorId = senderId;
+      } else {
+        // Both are counselors or admins - use alphabetical order
+        if (senderId.compareTo(receiverId) < 0) {
+          conversationUserId = senderId;
+          conversationCounselorId = receiverId;
+        } else {
+          conversationUserId = receiverId;
+          conversationCounselorId = senderId;
+        }
+      }
+
+      // Find or create conversation
+      final conversationQuery = await _firestore
+          .collection('conversations')
+          .where('userId', isEqualTo: conversationUserId)
+          .where('counselorId', isEqualTo: conversationCounselorId)
+          .limit(1)
+          .get();
+
+      String conversationId;
+      
+      if (conversationQuery.docs.isEmpty) {
+        // Create new conversation
+        final conversationData = {
+          'userId': conversationUserId,
+          'counselorId': conversationCounselorId,
+          'lastActivity': FieldValue.serverTimestamp(),
+          'lastMessageStatus': MessageStatus.sent.toString().split('.').last,
+          'isActive': true,
+          'highestPriority': analysis.priority.toString().split('.').last,
+        };
+        
+        final conversationRef = await _firestore.collection('conversations').add(conversationData);
+        conversationId = conversationRef.id;
+      } else {
+        conversationId = conversationQuery.docs.first.id;
+        
+        // Update conversation
+        await _firestore.collection('conversations').doc(conversationId).update({
+          'lastActivity': FieldValue.serverTimestamp(),
+          'lastMessageStatus': MessageStatus.sent.toString().split('.').last,
+        });
       }
 
       // Add message to conversation
-      final updatedMessages = List<Message>.from(conversation.messages)..add(message);
-      final updatedConversation = Conversation(
-        id: conversation.id,
-        userId: conversation.userId,
-        counselorId: conversation.counselorId,
-        messages: updatedMessages,
-        lastActivity: DateTime.now(),
-        lastMessageStatus: MessageStatus.sent,
-        isActive: conversation.isActive,
-      );
+      await _firestore
+          .collection('conversations')
+          .doc(conversationId)
+          .collection('messages')
+          .add(messageData);
 
-      // Update the conversation in the list
-      final conversationIndex = _conversations.indexWhere((c) => c.id == conversation.id);
-      _conversations[conversationIndex] = updatedConversation;
-
-      // Add to all messages list
-      _allMessages.add(message);
-
-      // Sort conversations by priority and last activity for counselors
-      _sortConversationsByPriority();
-
-      notifyListeners();
+      debugPrint('✅ Message sent successfully to Firestore');
       return true;
     } catch (e) {
-      print('Error sending message: $e');
+      debugPrint('❌ Error sending message: $e');
       return false;
     }
   }
@@ -147,7 +345,7 @@ class MessagingService extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print('Error marking message as read: $e');
+      debugPrint('Error marking message as read: $e');
       return false;
     }
   }
@@ -281,5 +479,34 @@ class MessagingService extends ChangeNotifier {
     _conversations.clear();
     _allMessages.clear();
     notifyListeners();
+  }
+
+  MessagePriority _parseMessagePriority(String? priority) {
+    switch (priority) {
+      case 'critical':
+        return MessagePriority.critical;
+      case 'urgent':
+        return MessagePriority.urgent;
+      case 'high':
+        return MessagePriority.high;
+      case 'low':
+        return MessagePriority.low;
+      default:
+        return MessagePriority.normal;
+    }
+  }
+
+  // Helper method to parse message status from string
+  MessageStatus _parseMessageStatus(String? status) {
+    switch (status) {
+      case 'delivered':
+        return MessageStatus.delivered;
+      case 'read':
+        return MessageStatus.read;
+      case 'replied':
+        return MessageStatus.replied;
+      default:
+        return MessageStatus.sent;
+    }
   }
 }
