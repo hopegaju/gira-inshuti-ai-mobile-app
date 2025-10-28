@@ -46,6 +46,10 @@ class AIPriorityService {
     'stressed': 0.4,
     'confused': 0.2,
     'tired': 0.1,
+    'love': 0.2,        // ADD THIS
+    'happy': 0.2,       // ADD THIS
+    'grateful': 0.2,    // ADD THIS
+    'excited': 0.3,     // ADD THIS
   };
 
   // Urgency indicators
