@@ -43,13 +43,13 @@ class DefaultFirebaseOptions {
     measurementId: 'G-X6N8QPCE2J',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'your-android-api-key-here',
-    appId: 'your-android-app-id-here',
-    messagingSenderId: '1083082446261',
-    projectId: 'my-mentat-health-project',
-    storageBucket: 'my-mentat-health-project.firebasestorage.app',
-  );
+static const FirebaseOptions android = FirebaseOptions(
+  apiKey: 'AIzaSyDPFx4wadj0-9KVHCzO9dwvuz_V_JwtBBc',
+  appId: '1:1083082446261:android:611002a83008bfdcf235fc',
+  messagingSenderId: '1083082446261',
+  projectId: 'my-mentat-health-project',
+  storageBucket: 'my-mentat-health-project.firebasestorage.app',
+);
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'your-ios-api-key-here',
