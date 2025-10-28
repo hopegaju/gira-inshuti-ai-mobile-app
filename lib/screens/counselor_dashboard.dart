@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../tabs/messages_tab.dart';
+import '../screens/user_emotion_report_screen.dart';
 import '../models/user.dart';
 
 class CounselorDashboard extends StatelessWidget {
@@ -175,36 +177,29 @@ class CounselorDashboard extends StatelessWidget {
                       mainAxisSpacing: 16,
                       children: [
                         _buildActionCard(
-                          icon: Icons.schedule,
-                          title: 'Schedule Session',
-                          subtitle: 'Book new appointments',
-                          color: Colors.blue,
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Scheduling feature coming soon!')),
-                            );
-                          },
-                        ),
-                        _buildActionCard(
                           icon: Icons.chat,
                           title: 'Messages',
                           subtitle: 'Client communications',
                           color: Colors.green,
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Messaging feature coming soon!')),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Scaffold(
+                                  body: MessagesTab(),
+                                ),
+                              ),
                             );
                           },
                         ),
                         _buildActionCard(
                           icon: Icons.assessment,
                           title: 'Reports',
-                          subtitle: 'Session summaries',
+                          subtitle: 'User emotion trends',
                           color: Colors.orange,
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Reports feature coming soon!')),
-                            );
+                            // Show a dialog to select which user's report to view
+                            _showUserSelectionDialog(context, regularUsers);
                           },
                         ),
                         _buildActionCard(
@@ -461,4 +456,54 @@ class CounselorDashboard extends StatelessWidget {
       ),
     );
   }
+  void _showUserSelectionDialog(BuildContext context, List<User> regularUsers) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Select Client'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: regularUsers.length,
+          itemBuilder: (context, index) {
+            final user = regularUsers[index];
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.blue.withOpacity(0.1),
+                child: Text(
+                  user.name.substring(0, 1).toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(user.name),
+              subtitle: Text(user.email),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserEmotionReportScreen(
+                      userId: user.id,
+                      userName: user.name,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+      ],
+    ),
+  );
+}
 }
