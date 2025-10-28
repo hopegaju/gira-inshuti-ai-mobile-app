@@ -50,13 +50,14 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _markMessagesAsRead() {
+  void _markMessagesAsRead() async {
     final currentUser = Provider.of<AuthService>(context, listen: false).currentUser;
     final messagingService = Provider.of<MessagingService>(context, listen: false);
     
     if (currentUser != null && widget.conversationId != null) {
       try {
-        final messages = messagingService.getMessagesForConversation(widget.conversationId!);
+        final messagesStream = messagingService.getMessagesForConversation(widget.conversationId!);
+        final messages = await messagesStream.first;
         for (final message in messages) {
           if (message.receiverId == currentUser.id && message.status != MessageStatus.read) {
             messagingService.markMessageAsRead(message.id, currentUser.id);
@@ -152,114 +153,59 @@ class _ChatScreenState extends State<ChatScreen> {
             return const Center(child: Text('Please log in to chat'));
           }
 
-          List<Message> messages = [];
-          if (widget.conversationId != null) {
-            try {
-              messages = messagingService.getMessagesForConversation(widget.conversationId!);
-            } catch (e) {
-              // Conversation doesn't exist yet
-            }
+          if (widget.conversationId == null) {
+            return Column(
+              children: [
+                Expanded(child: _buildEmptyState()),
+                _buildMessageInput(currentUser),
+              ],
+            );
           }
 
-          return Column(
-            children: [
-              // Messages list
-              Expanded(
-                child: messages.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-                          final isMe = message.senderId == currentUser.id;
-                          final showTimestamp = index == 0 || 
-                              messages[index - 1].timestamp.difference(message.timestamp).inMinutes.abs() > 5;
-                          
-                          return _buildMessageBubble(
-                            message, 
-                            isMe, 
-                            currentUser, 
-                            showTimestamp,
-                          );
-                        },
-                      ),
-              ),
-              
-              // Message input
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: SafeArea(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(24),
+          return StreamBuilder<List<Message>>(
+            stream: messagingService.getMessagesForConversation(widget.conversationId!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              final messages = snapshot.data ?? [];
+
+              return Column(
+                children: [
+                  // Messages list
+                  Expanded(
+                    child: messages.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            itemCount: messages.length,
+                            itemBuilder: (context, index) {
+                              final message = messages[index];
+                              final isMe = message.senderId == currentUser.id;
+                              final showTimestamp = index == 0 || 
+                                  messages[index - 1].timestamp.difference(message.timestamp).inMinutes.abs() > 5;
+                              
+                              return _buildMessageBubble(
+                                message, 
+                                isMe, 
+                                currentUser, 
+                                showTimestamp,
+                              );
+                            },
                           ),
-                          child: TextField(
-                            controller: _messageController,
-                            decoration: InputDecoration(
-                              hintText: 'Type your message...',
-                              hintStyle: TextStyle(color: Colors.grey.shade600),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
-                              ),
-                            ),
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            textCapitalization: TextCapitalization.sentences,
-                            onSubmitted: (_) => _sendMessage(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: _isTyping ? null : _sendMessage,
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: _isTyping 
-                                ? Colors.grey.shade400 
-                                : _getUserColor(widget.otherUser.role),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: _isTyping
-                              ? Container(
-                                  padding: const EdgeInsets.all(12),
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.send,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-              ),
-            ],
+                  
+                  // Message input
+                  _buildMessageInput(currentUser),
+                ],
+              );
+            },
           );
         },
       ),
@@ -321,10 +267,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // AI emojis (visible to counselors only, and only for user messages)
-                    if (!isMe && 
-                        currentUser.role == UserRole.counselor && 
-                        message.aiEmojis.isNotEmpty)
+                    // AI emojis - visible to users for their own messages, and to counselors for user messages
+                    if (message.aiEmojis.isNotEmpty && 
+                        ((isMe && currentUser.role == UserRole.user) || 
+                        (!isMe && currentUser.role == UserRole.counselor)))
                       Container(
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -350,25 +296,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           ],
                         ),
                       ),
-                    
-                    // Message status
-                    if (isMe) ...[
-                      Icon(
-                        _getStatusIcon(message.status),
-                        size: 14,
-                        color: _getStatusColor(message.status),
-                      ),
-                      const SizedBox(width: 4),
-                    ],
-                    
-                    Text(
-                      _formatTime(message.timestamp),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
+                
+                  ],  
                 ),
               ],
             ),
@@ -417,6 +346,80 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: Colors.grey.shade500,
               ),
               textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageInput(User currentUser) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Type your message...',
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                  onSubmitted: (_) => _sendMessage(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: _isTyping ? null : _sendMessage,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: _isTyping 
+                      ? Colors.grey.shade400 
+                      : _getUserColor(widget.otherUser.role),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: _isTyping
+                    ? Container(
+                        padding: const EdgeInsets.all(12),
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+              ),
             ),
           ],
         ),
@@ -476,7 +479,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
- String _formatTime(DateTime time) {
+  String _formatTime(DateTime time) {
     final hour = time.hour;
     final minute = time.minute.toString().padLeft(2, '0');
     final period = hour >= 12 ? 'PM' : 'AM';
