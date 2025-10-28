@@ -106,21 +106,10 @@ class HomeTab extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildMoodButton('😊', 'Great'),
-                          _buildMoodButton('😌', 'Good'),
-                          _buildMoodButton('😐', 'Okay'),
-                          _buildMoodButton('😔', 'Not Good'),
-                          _buildMoodButton('😢', 'Bad'),
-                        ],
-                      ),
+                      
                     ],
                   ),
                 ),
-
-                // Unread messages alert
                 if (unreadCount > 0) ...[
                   const SizedBox(height: 20),
                   GestureDetector(
@@ -243,22 +232,6 @@ class HomeTab extends StatelessWidget {
                   childAspectRatio: 1.3,
                   children: [
                     _buildQuickActionCard(
-                      icon: Icons.chat_bubble_outline,
-                      title: 'Talk to Counselor',
-                      color: Colors.blue,
-                      onTap: () {
-                        DefaultTabController.of(context).animateTo(1);
-                      },
-                    ),
-                    _buildQuickActionCard(
-                      icon: Icons.group_outlined,
-                      title: 'Community',
-                      color: Colors.purple,
-                      onTap: () {
-                        DefaultTabController.of(context).animateTo(2);
-                      },
-                    ),
-                    _buildQuickActionCard(
                       icon: Icons.self_improvement,
                       title: 'Breathing Exercise',
                       color: Colors.teal,
@@ -320,36 +293,7 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildMoodButton(String emoji, String label) {
-    return GestureDetector(
-      onTap: () {
-        // Log mood tracking
-      },
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              emoji,
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+ 
 
   Widget _buildQuickActionCard({
     required IconData icon,
