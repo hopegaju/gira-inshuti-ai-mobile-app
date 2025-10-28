@@ -81,197 +81,220 @@ class _MessagesTabState extends State<MessagesTab> {
             );
           }
 
-          final conversations = messagingService.getConversationsForUser(
-            currentUser.id,
-            currentUser.role,
-          );
+          return StreamBuilder<List<Conversation>>(
+            stream: messagingService.getConversationsForUser(
+              currentUser.id,
+              currentUser.role,
+            ),
+            builder: (context, conversationSnapshot) {
+              if (conversationSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          return Column(
-            children: [
-              // Counselors Section - Only for regular users
-              if (currentUser.role == UserRole.user)
-                StreamBuilder<List<User>>(
-                  stream: authService.getAllCounselors(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        padding: const EdgeInsets.all(16),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    }
+              if (conversationSnapshot.hasError) {
+                return Center(
+                  child: Text('Error loading conversations: ${conversationSnapshot.error}'),
+                );
+              }
 
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container(
-                        padding: const EdgeInsets.all(16),
-                        color: Colors.white,
-                        child: Center(
-                          child: Text(
-                            'No counselors available at the moment',
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ),
-                      );
-                    }
+              final conversations = conversationSnapshot.data ?? [];
 
-                    final counselors = snapshot.data!.take(10).toList();
-                    
-                    return Container(
-                      color: Colors.white,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.psychology,
-                                  color: Colors.green.shade700,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Available Counselors',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade800,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    '${counselors.length} online',
-                                    style: TextStyle(
-                                      fontSize: 12,
+              return Column(
+                children: [
+                  // Counselors Section - Only for regular users
+                  if (currentUser.role == UserRole.user)
+                    StreamBuilder<List<User>>(
+                      stream: authService.getAllCounselors(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            child: const Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            color: Colors.white,
+                            child: Center(
+                              child: Text(
+                                'No counselors available at the moment',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ),
+                          );
+                        }
+
+                        final counselors = snapshot.data!.take(10).toList();
+                        
+                        return Container(
+                          color: Colors.white,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.psychology,
                                       color: Colors.green.shade700,
-                                      fontWeight: FontWeight.w500,
+                                      size: 20,
                                     ),
-                                  ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Available Counselors',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey.shade800,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.shade50,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Text(
+                                        '${counselors.length} online',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.green.shade700,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 110,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: counselors.length,
-                              itemBuilder: (context, index) {
-                                final counselor = counselors[index];
-                                final existingConversation = messagingService
-                                    .getConversationBetweenUsers(
-                                      currentUser.id, 
-                                      counselor.id
+                              ),
+                              Container(
+                                height: 110,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: counselors.length,
+                                  itemBuilder: (context, index) {
+                                    final counselor = counselors[index];
+                                    final existingConversation = messagingService
+                                        .getConversationBetweenUsers(
+                                          currentUser.id, 
+                                          counselor.id
+                                        );
+                                    
+                                    return _buildCounselorCard(
+                                      context,
+                                      counselor,
+                                      currentUser,
+                                      messagingService,
+                                      existingConversation,
                                     );
-                                
-                                return _buildCounselorCard(
-                                  context,
-                                  counselor,
-                                  currentUser,
-                                  messagingService,
-                                  existingConversation,
-                                );
-                              },
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  
+                  // Divider
+                  if (currentUser.role == UserRole.user)
+                    Container(
+                      height: 8,
+                      color: Colors.grey.shade100,
+                    ),
+                  
+                  // Conversations Header
+                  if (conversations.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            color: Colors.blue.shade700,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            currentUser.role == UserRole.counselor 
+                              ? 'Client Conversations'
+                              : 'Your Conversations',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade800,
                             ),
                           ),
-                          const SizedBox(height: 8),
                         ],
                       ),
-                    );
-                  },
-                ),
-              
-              // Divider
-              if (currentUser.role == UserRole.user)
-                Container(
-                  height: 8,
-                  color: Colors.grey.shade100,
-                ),
-              
-              // Conversations Header
-              if (conversations.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        color: Colors.blue.shade700,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        currentUser.role == UserRole.counselor 
-                          ? 'Client Conversations'
-                          : 'Your Conversations',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              
-              // Conversations List
-              Expanded(
-                child: conversations.isEmpty
-                    ? _buildEmptyState(currentUser.role)
-                    : Container(
-                        color: Colors.white,
-                        child: ListView.separated(
-                          itemCount: conversations.length,
-                          separatorBuilder: (context, index) => Divider(
-                            height: 1,
-                            indent: 72,
-                            color: Colors.grey.shade200,
-                          ),
-                          itemBuilder: (context, index) {
-                            final conversation = conversations[index];
-                            return StreamBuilder<List<User>>(
-                              stream: authService.getAllUsers(),
-                              builder: (context, userSnapshot) {
+                    ),
+                  
+                  // Conversations List
+                  Expanded(
+                    child: conversations.isEmpty
+                        ? _buildEmptyState(currentUser.role)
+                        : Container(
+                            color: Colors.white,
+                            child: ListView.separated(
+                              itemCount: conversations.length,
+                              separatorBuilder: (context, index) => Divider(
+                                height: 1,
+                                indent: 72,
+                                color: Colors.grey.shade200,
+                              ),
+                              itemBuilder: (context, index) {
+                                final conversation = conversations[index];
                                 final otherUserId = currentUser.id == conversation.userId 
                                     ? conversation.counselorId 
                                     : conversation.userId;
                                 
-                                User? otherUser;
-                                if (userSnapshot.hasData) {
-                                  otherUser = userSnapshot.data!.firstWhere(
-                                    (u) => u.id == otherUserId,
-                                    orElse: () => User(
-                                      id: otherUserId,
-                                      email: 'unknown@example.com',
-                                      name: 'Unknown User',
-                                      role: UserRole.user,
-                                      createdAt: DateTime.now(),
-                                    ),
-                                  );
-                                }
-                                
-                                return _buildConversationTile(
-                                  context,
-                                  conversation,
-                                  otherUser,
-                                  currentUser,
-                                  messagingService,
+                                // Get other user from counselors stream if we're a user
+                                return StreamBuilder<List<User>>(
+                                  stream: currentUser.role == UserRole.user 
+                                      ? authService.getAllCounselors()  // Use counselors stream for users!
+                                      : authService.getAllUsers(),      // Use all users for counselors
+                                  builder: (context, userSnapshot) {
+                                    User? otherUser;
+                                    
+                                    if (userSnapshot.hasData && userSnapshot.data != null) {
+                                      try {
+                                        otherUser = userSnapshot.data!.firstWhere(
+                                          (u) => u.id == otherUserId,
+                                        );
+                                      } catch (e) {
+                                        // Fallback if user not found
+                                        otherUser = User(
+                                          id: otherUserId,
+                                          email: 'unknown@example.com',
+                                          name: 'Unknown User',
+                                          role: UserRole.counselor,
+                                          createdAt: DateTime.now(),
+                                        );
+                                      }
+                                    }
+                                    
+                                    return _buildConversationTile(
+                                      context,
+                                      conversation,
+                                      otherUser,
+                                      currentUser,
+                                      messagingService,
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
-                      ),
-              ),
-            ],
+                            ),
+                          ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
@@ -279,83 +302,85 @@ class _MessagesTabState extends State<MessagesTab> {
   }
 
   Widget _buildCounselorCard(
-    BuildContext context,
-    User counselor,
-    User currentUser,
-    MessagingService messagingService,
-    Conversation? existingConversation,
-  ) {
-    final hasUnread = existingConversation != null &&
-        existingConversation.messages.any(
-          (m) => m.receiverId == currentUser.id && m.status != MessageStatus.read
-        );
+  BuildContext context,
+  User counselor,
+  User currentUser,
+  MessagingService messagingService,
+  Conversation? existingConversation,
+) {
+  final hasUnread = existingConversation != null &&
+      existingConversation.messages.any(
+        (m) => m.receiverId == currentUser.id && m.status != MessageStatus.read
+      );
 
-    return Container(
-      width: 90,
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  otherUser: counselor,
-                  conversationId: existingConversation?.id,
-                ),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.green.shade50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: hasUnread ? Colors.green.shade400 : Colors.green.shade100,
-                width: hasUnread ? 2 : 1,
+  return Container(
+    width: 90,
+    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                otherUser: counselor,
+                conversationId: existingConversation?.id,
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.green.shade100,
-                      radius: 24,
-                      child: Text(
-                        counselor.name.substring(0, 1).toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasUnread ? Colors.green.shade400 : Colors.green.shade100,
+              width: hasUnread ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min, // ADD THIS
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.green.shade100,
+                    radius: 20, // REDUCED from 24
+                    child: Text(
+                      counselor.name.substring(0, 1).toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.green.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16, // REDUCED from 18
+                      ),
+                    ),
+                  ),
+                  if (hasUnread)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 10, // REDUCED from 12
+                        height: 10, // REDUCED from 12
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
                         ),
                       ),
                     ),
-                    if (hasUnread)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
+                ],
+              ),
+              const SizedBox(height: 4), // REDUCED from 6
+              Flexible( // WRAP with Flexible
+                child: Text(
                   counselor.name.split(' ').first,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11, // REDUCED from 12
                     fontWeight: FontWeight.w600,
                     color: Colors.grey.shade800,
                   ),
@@ -363,29 +388,30 @@ class _MessagesTabState extends State<MessagesTab> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade600,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'Available',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
+              ),
+              const SizedBox(height: 2),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), // REDUCED padding
+                decoration: BoxDecoration(
+                  color: Colors.green.shade600,
+                  borderRadius: BorderRadius.circular(6), // REDUCED from 8
+                ),
+                child: const Text(
+                  'Online',
+                  style: TextStyle(
+                    fontSize: 8, // REDUCED from 9
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildConversationTile(
     BuildContext context,
@@ -394,164 +420,199 @@ class _MessagesTabState extends State<MessagesTab> {
     User currentUser,
     MessagingService messagingService,
   ) {
-    final lastMessage = conversation.lastMessage;
-    final unreadCount = conversation.messages
-        .where((m) => m.receiverId == currentUser.id && m.status != MessageStatus.read)
-        .length;
+    return StreamBuilder<List<Message>>(
+      stream: messagingService.getMessagesForConversation(conversation.id),
+      builder: (context, messageSnapshot) {
+        final messages = messageSnapshot.data ?? [];
+        final lastMessage = messages.isNotEmpty ? messages.last : null;
+        final unreadCount = messages
+          .where((m) => m.receiverId == currentUser.id && m.status != MessageStatus.read)
+          .length;
 
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      onTap: () {
-        if (otherUser != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatScreen(
-                otherUser: otherUser,
-                conversationId: conversation.id,
-              ),
-            ),
-          );
-        }
-      },
-      leading: Stack(
-        children: [
-          CircleAvatar(
-            backgroundColor: _getUserColor(otherUser?.role).withOpacity(0.1),
-            radius: 28,
-            child: Text(
-              otherUser?.name.substring(0, 1).toUpperCase() ?? 'U',
-              style: TextStyle(
-                color: _getUserColor(otherUser?.role),
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-          ),
-          if (currentUser.role == UserRole.counselor && 
-              conversation.highestPriority.level >= MessagePriority.high.level)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: _getPriorityColor(conversation.highestPriority),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          onTap: () {
+            if (otherUser != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    otherUser: otherUser,
+                    conversationId: conversation.id,
+                  ),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.priority_high,
-                    size: 10,
-                    color: Colors.white,
+              );
+            }
+          },
+          leading: Stack(
+            children: [
+              CircleAvatar(
+                backgroundColor: _getUserColor(otherUser?.role).withOpacity(0.1),
+                radius: 28,
+                child: Text(
+                  otherUser?.name.substring(0, 1).toUpperCase() ?? 'U',
+                  style: TextStyle(
+                    color: _getUserColor(otherUser?.role),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
               ),
-            ),
-        ],
-      ),
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              otherUser?.name ?? 'Unknown User',
-              style: TextStyle(
-                fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-          ),
-          if (lastMessage != null)
-            Text(
-              _formatTime(lastMessage.timestamp),
-              style: TextStyle(
-                fontSize: 12,
-                color: unreadCount > 0 ? Colors.blue.shade600 : Colors.grey.shade600,
-                fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 4),
-          if (lastMessage != null)
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    lastMessage.content,
-                    style: TextStyle(
-                      color: unreadCount > 0 ? Colors.grey.shade800 : Colors.grey.shade600,
-                      fontWeight: unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            )
-          else
-            Text(
-              'No messages yet',
-              style: TextStyle(
-                color: Colors.grey.shade500,
-                fontStyle: FontStyle.italic,
-                fontSize: 14,
-              ),
-            ),
-          if (currentUser.role == UserRole.counselor && 
-              lastMessage != null && 
-              lastMessage.aiEmojis.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              if (currentUser.role == UserRole.counselor && 
+                  conversation.highestPriority.level >= MessagePriority.high.level)
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 18,
+                    height: 18,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(8),
+                      color: _getPriorityColor(conversation.highestPriority),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: Text(
-                      lastMessage.aiEmojis.take(3).join(' '),
-                      style: const TextStyle(fontSize: 10),
+                    child: const Center(
+                      child: Icon(
+                        Icons.priority_high,
+                        size: 10,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
-        ],
-      ),
-      trailing: unreadCount > 0
-          ? Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade600,
-                shape: BoxShape.circle,
-              ),
-              constraints: const BoxConstraints(
-                minWidth: 24,
-                minHeight: 24,
-              ),
-              child: Text(
-                unreadCount.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
+            ],
+          ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  otherUser?.name ?? 'Unknown User',
+                  style: TextStyle(
+                    fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-            )
-          : Icon(
-              Icons.chevron_right,
-              color: Colors.grey.shade400,
-            ),
+              if (lastMessage != null)
+                Text(
+                  _formatTime(lastMessage.timestamp),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: unreadCount > 0 ? Colors.blue.shade600 : Colors.grey.shade600,
+                    fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              if (lastMessage != null)
+                Row(
+                  children: [
+                    // ALWAYS show emoji for user's messages (whether they sent or counselor is viewing)
+                    if (lastMessage.aiEmojis.isNotEmpty && 
+                        lastMessage.senderId == currentUser.id)
+                      Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          lastMessage.aiEmojis.first,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    Expanded(
+                      child: Text(
+                        lastMessage.content,
+                        style: TextStyle(
+                          color: unreadCount > 0 ? Colors.grey.shade800 : Colors.grey.shade600,
+                          fontWeight: unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
+                          fontSize: 14,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  'No messages yet',
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 14,
+                  ),
+                ),
+              // Show ALL emojis from last message below (for counselor view)
+              if (currentUser.role == UserRole.counselor && 
+                  lastMessage != null && 
+                  lastMessage.aiEmojis.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: _getPriorityColor(lastMessage.priority).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              lastMessage.aiEmojis.take(3).join(' '),
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                            if (lastMessage.priority.level >= MessagePriority.high.level) ...[
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.priority_high,
+                                size: 10,
+                                color: _getPriorityColor(lastMessage.priority),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          trailing: unreadCount > 0
+              ? Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade600,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 24,
+                    minHeight: 24,
+                  ),
+                  child: Text(
+                    unreadCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Icon(
+                  Icons.chevron_right,
+                  color: Colors.grey.shade400,
+                ),
+        );
+      },
     );
   }
 
