@@ -15,22 +15,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    // Debug logging
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      debugPrint('=== ADMIN DASHBOARD DEBUG ===');
-      debugPrint('Current user: ${authService.currentUser?.email}');
-      debugPrint('User role: ${authService.currentUser?.role}');
-      debugPrint('Auth mode: ${authService.authMode}');
-      debugPrint('Is using Firebase: ${authService.isUsingFirebase}');
-      
-      final usersStream = authService.getAllUsers();
-      debugPrint('Users stream is null: ${usersStream == null}');
-    });
-  }
+ @override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    debugPrint('=== ADMIN DASHBOARD DEBUG ===');
+    debugPrint('Current user: ${authService.currentUser?.email}');
+    debugPrint('User role: ${authService.currentUser?.role}');
+    debugPrint('Is admin: ${authService.currentUser?.role == UserRole.admin}');
+  });
+}
   @override
   void dispose() {
     _nameController.dispose();
